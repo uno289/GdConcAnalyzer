@@ -1,0 +1,7 @@
+Data/*
+Data Analysis/EmailandPass.py
+**/__pycache__/*
+**/.DS_Store
+**/.env
+**/*.wconf
+**/.idea/

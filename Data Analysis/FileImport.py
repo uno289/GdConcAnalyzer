@@ -1,62 +1,111 @@
 # ============================================
 # Gd Concentration Importer
-# Purpose: Import data from oscilloscope, then
-#   gather minutely datasets for analysis.
+# Purpose: Detect data added to pre-process
+#   folder, then gather minutely datasets for
+#   analysis. After analysis, move data to
+#   post-process folder.
 # ============================================
 
 # Imports
 
 import os
 import csv
-import numpy as np
-import scipy as sp
-import pandas as pd
+import shutil
+import time
+import DataLogging
+import eventlogger
+import EmailAlert
+import main
 
+# --------------------------------------------
 # File declarations
 
-file0000 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC0000.CSV")
-file0001 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC0001.CSV")
-file1233 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1233.CSV")
-file1255 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1255.CSV")
-file1278 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1278.CSV")
-file1283 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1283.CSV")
-file1288 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1288.CSV")
-file1293 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1293.CSV")
-file1298 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1298.CSV")
-file1303 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1303.CSV")
+newData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\New"                                  # Input data
+processedData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Processed"                      # Dump folder after analysis
 
 
 # ============================================
 # Code
+# --------------------------------------------
+mailer = EmailAlert.EmailAlert()
 
+
+# Runs 1x/loop, scans newData for a file, and if it finds one, returns the file location/name
+class scanNewFile:
+    def __init__(self):
+        pass
+    def scanFile(self):
+        files = os.listdir(newData)
+        fileSizeb = 4450000
+        for file in files:
+            if file.endswith(".txt"):
+                filepath = os.path.join(newData, file)
+                if os.path.getsize(filepath)>fileSizeb:
+                    filesize1 = os.path.getsize(filepath)
+                    #time.sleep(2)
+                    filesize2 = os.path.getsize(filepath)
+                    if filesize1!=filesize2:
+                        pass
+                    else:
+                        return os.path.join(newData, file)
+        return None
+# --------------------------------------------
+
+# Runs only when a file is in newData. After file is analyzed, deletes the file.
+# Currently OVERWRITES FILES {os.remove(destination)}
+class MoveFile:
+    def __init__(self, fileName):
+        self.fileName = fileName
+    def moveFile(self):
+        destination = os.path.join(processedData, os.path.basename(self.fileName))
+        try:
+            if os.path.exists(destination):
+                os.remove(destination)
+            if main.PROD:
+                os.remove(self.fileName)
+            else:
+                shutil.move(self.fileName, processedData)
+        except PermissionError:
+            message = "File still in use. Will retry next scan..."
+            ErrorLog = DataLogging.errorLogger(time.time(), message)
+            eventlogger.log_event("Analyzer","WARNING", message)
+# --------------------------------------------
+
+# Runs after file is found. Creates a list with Ch1 voltages split by trace for all 600 traces. Also stores time constant for ADC.
 class FileReader:
     def __init__(self, fileName):
-        self.deltaTime = 0
+        self.deltaTime = 1.28e-6
         self.Ch1V = []
-        self.Ch4V = []
+        self.fullList = []
 
     def readFile(self, fileName):
         self.filepath = fileName
         self.fileName = os.path.basename(fileName)
-        with open(self.filepath, "r") as fileOne:
-            reader = csv.reader(fileOne)
+        with open(self.filepath, "r") as fileOne:                   # This section creates a list of the individual traces, each a list of their own
+            reader = csv.reader(fileOne, delimiter='\t')
+            self.unixtime = os.path.getmtime(self.filepath)         # Currently just is unix time of when the file is input - this seems to be more than enough for the data freq.
 
-            for row_num, row in enumerate(reader, start=1):
+            for row_num, row in enumerate(reader):                  # Loop that adds traces to lists and appends lists to the main array
+                row = [field.strip() for field in row if field.strip() != ""]
+                self.deltaTime = 1.28e-6
 
-                if row[0] == "Delta(second)":
-                    self.deltaTime = float(row[1])
-
-                if row_num < 31:
+                try:
+                    sample = int(row[0])
+                except ValueError:
                     continue
-
-                if row[0] != '':
-                    self.Ch1V.append(float(row[0]))
-                if row[3] != '':
-                    self.Ch4V.append(float(row[3]))
-        print(self.filepath)
+                except RuntimeError:
+                    eventlogger.log_event("Analyzer", "ERROR", "Trace length does not match defined length.")
+                    mailer.sendEmail("ERROR","FIM001")
+                if 0 <= sample <= 7813:
+                    self.Ch1V.append(float(row[1]))
+                if sample == 7813:
+                    self.fullList.append(self.Ch1V.copy())
+                    self.Ch1V = []
+        #print("Ch1V length: ", len(self.fullList))
         return self
+# --------------------------------------------
 
-def load_waveform(fileName):
+def load_waveform(fileName):                                        # Loads waveforms (used in main)
     reader = FileReader(fileName)
     reader.readFile(fileName)
     return reader
