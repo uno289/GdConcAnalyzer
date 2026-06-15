@@ -66,6 +66,7 @@ except RuntimeError:
     y_model = None
     eq_text = "Fit failed"
 
+
 # --------------------------------------------
 # Test graphing
 
