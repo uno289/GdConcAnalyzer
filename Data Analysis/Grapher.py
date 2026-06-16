@@ -17,24 +17,6 @@ import ExponentialFit
 
 # Currently, all placeholders test the old data sets
 # --------------------------------------------
-
-#This chunk here is just to import the file into the grapher
-
-'''file = FileImport.load_waveform(file1233)
-
-# --------------------------------------------
-# Gather exp fit
-
-processor = SignalProcessor.SignalProcessor(file.Ch1V)
-
-Ch1V = processor.zero_baseline()
-timeAxis = np.arange(len(file.Ch1V)) * file.deltaTime
-
-testrun = ExponentialFit.ExponentialFit(Ch1V, timeAxis)
-
-fit = testrun.estimate_fit()
-'''
-# --------------------------------------------
 # Test graphing
 
 class Grapher():
