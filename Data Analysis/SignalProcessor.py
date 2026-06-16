@@ -20,10 +20,10 @@ from FileImport import file0000, file0001, file1233, file1255, file1278, file128
 class SignalProcessor:
     def __init__(self,signal):
         self.signal = np.array(signal)
-        start = np.argmax(abs(self.signal)) + 5
+        self.start = np.argmax(abs(self.signal)) + 5
 
     def zero_baseline(self):
-        start = np.argmax(abs(self.signal)) + 5
+        self.start = np.argmax(abs(self.signal)) + 5
         baseline = np.median(self.signal[:np.argmax(abs(self.signal))-3])
         return np.array(self.signal - baseline)
 
