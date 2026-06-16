@@ -20,7 +20,7 @@ import ExponentialFit
 
 #This chunk here is just to import the file into the grapher
 
-file = FileImport.load_waveform(file0001)
+file = FileImport.load_waveform(file1233)
 
 # --------------------------------------------
 # Gather exp fit
@@ -31,13 +31,14 @@ Ch1V = processor.zero_baseline()
 timeAxis = np.arange(len(file.Ch1V)) * file.deltaTime
 
 testrun = ExponentialFit.ExponentialFit(Ch1V, timeAxis)
-print("x fit: ", testrun.x_fit, "y fit: ", testrun.y_fit)
 
 fit = testrun.estimate_fit()
 
 # --------------------------------------------
 # Test graphing
 
+
+error_y=dict(type="data", array=(0.1 * testrun.y_fit), visible=True)
 fig = pl.graph_objs.Figure()
 
 fig.add_trace(
@@ -54,6 +55,7 @@ if testrun.y_model is not None:
         pl.graph_objs.Scatter(
             x=testrun.x_fit,
             y=testrun.y_model,
+            error_y=error_y,
             mode="lines",
             name="Bi-exponential fit",
             line=dict(dash="dash"),
