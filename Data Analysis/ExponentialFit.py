@@ -15,8 +15,6 @@ import FileImport
 import SignalProcessor
 from FileImport import file0000, file0001, file1233, file1255, file1278, file1283, file1288, file1293, file1298, file1303
 
-file = FileImport.load_waveform(file0001)
-
 # ============================================
 # Code
 
