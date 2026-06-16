@@ -49,6 +49,7 @@ class ExponentialFit:
             self.y_model = self.exp_fit(self.x_fit, *popt)
             print(abs(V_0 + V_BG) * tau)
             print(V_0, tau, self.t_peak, V_BG)
+            return
 
         except RuntimeError:
             print("Fit failed: skipping curve fit")

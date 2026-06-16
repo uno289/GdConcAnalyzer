@@ -20,7 +20,7 @@ import ExponentialFit
 
 #This chunk here is just to import the file into the grapher
 
-file = FileImport.load_waveform(file1233)
+'''file = FileImport.load_waveform(file1233)
 
 # --------------------------------------------
 # Gather exp fit
@@ -33,40 +33,46 @@ timeAxis = np.arange(len(file.Ch1V)) * file.deltaTime
 testrun = ExponentialFit.ExponentialFit(Ch1V, timeAxis)
 
 fit = testrun.estimate_fit()
-
+'''
 # --------------------------------------------
 # Test graphing
 
+class Grapher():
+    def __init__(self, testrun, Ch1V, timeAxis):
+        self.testrun = testrun
+        self.error_y=dict(type="data", array=(0.1 * testrun.y_fit), visible=True)
+        self.Ch1V = Ch1V
+        self.timeAxis = timeAxis
 
-error_y=dict(type="data", array=(0.1 * testrun.y_fit), visible=True)
-fig = pl.graph_objs.Figure()
+    def plot(self):
+        fig = pl.graph_objs.Figure()
 
-fig.add_trace(
-    pl.graph_objs.Scatter(
-        name='Ch1 V',
-        x=testrun.time_axis,
-        y=Ch1V,
-        mode="lines",
-        hovertemplate="t: %{x:.3e} s<br>V: %{y:.3e} V<extra></extra>"
-    )
-)
-if testrun.y_model is not None:
-    fig.add_trace(
-        pl.graph_objs.Scatter(
-            x=testrun.x_fit,
-            y=testrun.y_model,
-            error_y=error_y,
-            mode="lines",
-            name="Bi-exponential fit",
-            line=dict(dash="dash"),
-            line_color="red"
+        fig.add_trace(
+            pl.graph_objs.Scatter(
+                name='Ch1 V',
+                x=self.testrun.time_axis,
+                y=self.Ch1V,
+                mode="lines",
+                hovertemplate="t: %{x:.3e} s<br>V: %{y:.3e} V<extra></extra>"
+            )
         )
-    )
+        if self.testrun.y_model is not None:
+            fig.add_trace(
+                pl.graph_objs.Scatter(
+                    x=self.testrun.x_fit,
+                    y=self.testrun.y_model,
+                    # error_y=self.error_y,
+                    mode="lines",
+                    name="Bi-exponential fit",
+                    line=dict(dash="dash"),
+                    line_color="red"
+                )
+            )
 
-fig.update_layout(
-    title= file.fileName,
-    xaxis_title="Time (s)",
-    yaxis_title="Voltage (V) (ZEROED)",
-)
+        fig.update_layout(
+            title= "Placeholder",
+            xaxis_title="Time (s)",
+            yaxis_title="Voltage (V) (ZEROED)",
+        )
 
-fig.show()
+        fig.show()
