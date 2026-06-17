@@ -64,14 +64,18 @@ class oneHourAggregator:
             tenMinuteDataSet = self.tenMinuteData.copy() # this dataset here just holds a list of 10 timestamps and concentrations
             tenMinuteMax = 0
             tenMinuteAverage = 0
+            errorMax = 0
+            tenMinuteError = 0
 
             for i in tenMinuteDataSet: # This loop is responsible for getting the average above
                 tenMinuteMax = tenMinuteMax + i[1]
                 tenMinuteAverage = tenMinuteMax / len(tenMinuteDataSet)
+                errorMax = errorMax + i[2]
+                tenMinuteError = errorMax / len(tenMinuteDataSet)
 
             with open(tenMinuteData, 'a', newline='') as tenMinuteDataFile: # Writing the 10m average to the permanent CSV for storage
                 writer = csv.writer(tenMinuteDataFile)
-                writer.writerow([tenMinuteDataSet[-1][0],tenMinuteAverage])
+                writer.writerow([tenMinuteDataSet[-1][0],tenMinuteAverage,tenMinuteError])
             self.tenMinuteData.clear()
 
         if len(self.oneHourData) >= 60:

@@ -40,6 +40,7 @@ class FileReader:
         self.fileName = os.path.basename(fileName)
         with open(self.filepath, "r") as fileOne:
             reader = csv.reader(fileOne)
+            self.unixtime = os.path.getmtime(self.filepath)
 
             for row_num, row in enumerate(reader, start=1):
 

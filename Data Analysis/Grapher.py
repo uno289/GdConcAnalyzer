@@ -19,7 +19,7 @@ import ExponentialFit
 # --------------------------------------------
 # Test graphing
 
-class Grapher():
+class Grapher:
     def __init__(self, testrun, Ch1V, timeAxis):
         self.testrun = testrun
         self.error_y=dict(type="data", array=(0.1 * testrun.y_fit), visible=True)
@@ -58,3 +58,6 @@ class Grapher():
         )
 
         fig.show()
+
+'''class LongTermGraph:
+    def __init__(self):'''
