@@ -54,7 +54,6 @@ class FileReader:
                     self.Ch1V.append(float(row[0]))
                 if row[3] != '':
                     self.Ch4V.append(float(row[3]))
-        print(self.filepath)
         return self
 
 def load_waveform(fileName):

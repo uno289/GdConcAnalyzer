@@ -59,5 +59,34 @@ class Grapher:
 
         fig.show()
 
-'''class LongTermGraph:
-    def __init__(self):'''
+class MinutelyGraph:
+    def __init__(self,data):
+        self.data = data
+    def plotLongTerm(self):
+        self.timeStamp = []
+        self.y_data = []
+        self.error_data = []
+
+        for i in self.data:
+            self.timeStamp.append(float(i[0]))
+            self.y_data.append(float(i[1]))
+            self.error_data.append(float(i[2]))
+
+        fig = pl.graph_objs.Figure()
+        fig.add_trace(
+            pl.graph_objs.Scatter(
+                name='Long-term Concentration (Minutely)',
+                x=self.timeStamp,
+                y=self.y_data,
+                error_y=dict(type="data", array=self.error_data, visible=True),
+                mode="lines",
+                hovertemplate='Time: %{x:.3e} s<br>Concentration: %{y:.3e} V<extra></extra>'
+            )
+        )
+        fig.update_layout(
+            title= "Minutely Concentration",
+            xaxis_title="Time (Unix)",
+            yaxis_title="Concentration",
+        )
+        fig.show()
+
