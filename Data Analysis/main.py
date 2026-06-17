@@ -43,7 +43,7 @@ def main():
         print("Concentration = ",round(concentration,5), "+/-", error)
 
         # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
-        unixtime = time.time()
+        unixtime = time.time()+32400
         hourLogger.addSample([unixtime, concentration, error])       # Logs the time, concentration, and error into file
         time.sleep(1)
 
@@ -57,8 +57,8 @@ def main():
         testrun = ExponentialFit.ExponentialFit(Ch1V, timeAxis)     # Feeds in time and voltage data for exp fit
         fit = testrun.estimate_fit()                                # Performs exp fit
 
-        '''Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
-        Graph.plot()'''
+        Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
+        Graph.plot()
 
         calibrator = Calibration.Calibration(testrun.V0_tau)        # Loading the V_0 * tau value into the calibrator
         concentration = calibrator.linearFunction()                 # Returns concentration value
@@ -66,7 +66,7 @@ def main():
         print("Concentration = ",round(concentration,5), "+/-", error)
 
         # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
-        unixtime = time.time()
+        unixtime = time.time()+32400
         hourLogger.addSample([unixtime, concentration, error])       # Logs the time, concentration, and error into file
         time.sleep(1)
 
@@ -89,7 +89,7 @@ def main():
         print("Concentration = ",round(concentration,5), "+/-", error)
 
         # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
-        unixtime = time.time()
+        unixtime = time.time()+32400
         hourLogger.addSample([unixtime, concentration, error])       # Logs the time, concentration, and error into file
         time.sleep(1)
 

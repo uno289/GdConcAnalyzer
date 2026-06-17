@@ -6,6 +6,7 @@
 # Imports and File Definitions
 
 import plotly as pl
+import pandas as pd
 import numpy as np
 import FileImport
 from FileImport import file0000, file0001, file1233, file1255, file1278, file1283, file1288, file1293, file1298, file1303
@@ -45,7 +46,7 @@ class Grapher:
                     y=self.testrun.y_model,
                     # error_y=self.error_y,
                     mode="lines",
-                    name="Bi-exponential fit",
+                    name="Exponential fit",
                     line=dict(dash="dash"),
                     line_color="red"
                 )
@@ -72,12 +73,16 @@ class MinutelyGraph:
             self.y_data.append(float(i[1]))
             self.error_data.append(float(i[2]))
 
+        data = {'timestamp': self.timeStamp, 'y_data': self.y_data, 'error': self.error_data}
+        df = pd.DataFrame(data)
+        df['date'] = pd.to_datetime(df['timestamp'], unit='s')
+
         fig = pl.graph_objs.Figure()
         fig.add_trace(
             pl.graph_objs.Scatter(
                 name='Long-term Concentration (Minutely)',
-                x=self.timeStamp,
-                y=self.y_data,
+                x=df['date'],
+                y=df['y_data'],
                 error_y=dict(type="data", array=self.error_data, visible=True),
                 mode="lines",
                 hovertemplate='Time: %{x:.3e} s<br>Concentration: %{y:.3e} V<extra></extra>'
