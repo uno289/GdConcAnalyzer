@@ -24,7 +24,7 @@ from FileImport import file0000, file0001, file1233, file1255, file1278, file128
 def main():
     hourLogger = DataLogging.oneHourAggregator()  # Instantiates the hour logger
 
-    for i in range(1000):
+    for i in range(5):
         file = FileImport.load_waveform(file1288)                   # Imports the file
         processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
 
@@ -47,7 +47,7 @@ def main():
         hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
         # time.sleep(1)
 
-    for i in range(1000):
+    for i in range(5):
         file = FileImport.load_waveform(file1278)                   # Imports the file
         processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
 
@@ -70,7 +70,7 @@ def main():
         hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
         # time.sleep(1)
 
-    for i in range(1000):
+    for i in range(5):
         file = FileImport.load_waveform(file1233)                   # Imports the file
         processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
 

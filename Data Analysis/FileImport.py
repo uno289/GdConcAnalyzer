@@ -30,7 +30,6 @@ class FileReader:
     def __init__(self, fileName):
         self.deltaTime = 0
         self.Ch1V = []
-        self.Ch4V = []
 
     def readFile(self, fileName):
         self.filepath = fileName
@@ -49,8 +48,7 @@ class FileReader:
 
                 if row[0] != '':
                     self.Ch1V.append(float(row[0]))
-                if row[3] != '':
-                    self.Ch4V.append(float(row[3]))
+
         return self
 
 def load_waveform(fileName):
