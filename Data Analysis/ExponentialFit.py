@@ -46,6 +46,18 @@ class ExponentialFit:
             print("V0 Tau: ", abs(V_0 + V_BG) * tau)
             self.V0_tau = abs(V_0 + V_BG) * tau
 
+            # Error correction below:
+            A = V_0 + V_BG
+            self.V_0 = V_0
+            self.tau = tau
+            self.V_BG = V_BG
+
+            J = np.array([tau, A, tau])
+
+            self.Error_var = J @ pcov @ J.T
+            self.Error_sqrt = np.sqrt(self.Error_var)
+            print("Error_sqrt: ", self.Error_sqrt)
+
         except RuntimeError:
             print("Fit failed: skipping curve fit")
             popt = None

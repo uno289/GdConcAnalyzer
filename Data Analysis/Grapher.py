@@ -80,7 +80,7 @@ class MinutelyGraph:
                 y=df['y_data'],
                 error_y=dict(type="data", array=self.error_data, visible=True),
                 mode="lines",
-                hovertemplate='Time: %{x:.3e} s<br>Concentration: %{y:.3e} V<extra></extra>'
+                hovertemplate='Time: %{x}<br>Concentration: %{y} %<extra></extra>'
             )
         )
         fig.update_layout(

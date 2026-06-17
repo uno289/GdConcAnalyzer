@@ -7,12 +7,15 @@
 # Imports and File Definitions
 # --------------------------------------------
 # Code
+import ExponentialFit
 
 class Calibration:
-    def __init__(self, V0_tau):
+    def __init__(self, V0_tau, Error_sqrt):
         self.slope = 0.000113781 # THIS ONLY WORKS FOR 1233, 1278, 1288!!!
         # self.slope = 0.00020634 # THIS ONLY WORKS FOR 1255, 1283, 1293!!!
         self.V0_tau = V0_tau
+        self.Error_sqrt = Error_sqrt
     def linearFunction(self):
-        concentration = self.V0_tau / self.slope
-        return concentration
+        self.concentration = self.V0_tau / self.slope
+        self.error = self.Error_sqrt / self.slope
+        return self.concentration, self.error

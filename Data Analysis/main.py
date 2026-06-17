@@ -3,16 +3,18 @@
 # Purpose: Call other scripts to create
 #   minutely, hourly, daily analyses, graphs,
 #   etc.
+# NOTE: Will stay running 24/7
 # ============================================
 # Imports
 import numpy as np
-import DataLogging
 import time
-import FileImport
+
+import DataLogging
 import Grapher
 import ExponentialFit
 import SignalProcessor
 import Calibration
+import FileImport
 from FileImport import file0000, file0001, file1233, file1255, file1278, file1283, file1288, file1293, file1298, file1303
 
 # ============================================
@@ -35,14 +37,14 @@ def main():
         '''Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
         Graph.plot()'''
 
-        calibrator = Calibration.Calibration(testrun.V0_tau)        # Loading the V_0 * tau value into the calibrator
-        concentration = calibrator.linearFunction()                 # Returns concentration value
-        error = 0.1 * concentration
-        print("Concentration = ",round(concentration,5), "+/-", error)
+        calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
+        concentration = calibrator.linearFunction()                 # Returns concentration value AND error
+        error = 0.1 * concentration[0] + concentration[1]
+        print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
 
         # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
         unixtime = time.time()+32400
-        hourLogger.addSample([unixtime, concentration, error])       # Logs the time, concentration, and error into file
+        hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
         time.sleep(1)
 
     for i in range(5):
@@ -55,17 +57,17 @@ def main():
         testrun = ExponentialFit.ExponentialFit(Ch1V, timeAxis)     # Feeds in time and voltage data for exp fit
         fit = testrun.estimate_fit()                                # Performs exp fit
 
-        Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
-        Graph.plot()
+        '''Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
+        Graph.plot()'''
 
-        calibrator = Calibration.Calibration(testrun.V0_tau)        # Loading the V_0 * tau value into the calibrator
-        concentration = calibrator.linearFunction()                 # Returns concentration value
-        error = 0.1 * concentration
-        print("Concentration = ",round(concentration,5), "+/-", error)
+        calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
+        concentration = calibrator.linearFunction()                 # Returns concentration value AND error
+        error = 0.1 * concentration[0] + concentration[1]
+        print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
 
         # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
         unixtime = time.time()+32400
-        hourLogger.addSample([unixtime, concentration, error])       # Logs the time, concentration, and error into file
+        hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
         time.sleep(1)
 
     for i in range(5):
@@ -81,19 +83,18 @@ def main():
         '''Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
         Graph.plot()'''
 
-        calibrator = Calibration.Calibration(testrun.V0_tau)        # Loading the V_0 * tau value into the calibrator
-        concentration = calibrator.linearFunction()                 # Returns concentration value
-        error = 0.1 * concentration
-        print("Concentration = ",round(concentration,5), "+/-", error)
+        calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
+        concentration = calibrator.linearFunction()                 # Returns concentration value AND error
+        error = 0.1 * concentration[0] + concentration[1]
+        print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
 
         # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
         unixtime = time.time()+32400
-        hourLogger.addSample([unixtime, concentration, error])       # Logs the time, concentration, and error into file
+        hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
         time.sleep(1)
 
-    minutelyGraph = Grapher.MinutelyGraph(hourLogger.oneDayCache)
-    minutelyGraph.plotLongTerm()
-
+    LongTermGraph = Grapher.MinutelyGraph(hourLogger.oneDayCache)
+    LongTermGraph.plotLongTerm()
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
