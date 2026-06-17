@@ -8,9 +8,6 @@
 
 import os
 import csv
-import numpy as np
-import scipy as sp
-import pandas as pd
 
 # File declarations
 

@@ -6,8 +6,6 @@
 # ============================================
 # Imports
 import numpy as np
-import datetime
-from random import random
 import DataLogging
 import time
 import FileImport

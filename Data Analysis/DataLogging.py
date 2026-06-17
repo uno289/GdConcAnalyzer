@@ -7,7 +7,6 @@
 # Imports and File Definitions
 
 import csv
-import numpy as np
 import collections
 
 tenMinuteData = "/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/tenMinuteData.csv"
