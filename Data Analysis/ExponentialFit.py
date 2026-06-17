@@ -43,7 +43,7 @@ class ExponentialFit:
             V_0, tau, V_BG = popt
 
             self.y_model = self.exp_fit(self.x_fit, *popt)
-            print("V0 Tau: ", abs(V_0 + V_BG) * tau)
+            # print("V0 Tau: ", abs(V_0 + V_BG) * tau)
             self.V0_tau = abs(V_0 + V_BG) * tau
 
             # Error correction below:
@@ -56,7 +56,7 @@ class ExponentialFit:
 
             self.Error_var = J @ pcov @ J.T
             self.Error_sqrt = np.sqrt(self.Error_var)
-            print("Error_sqrt: ", self.Error_sqrt)
+            # print("Error_sqrt: ", self.Error_sqrt)
 
         except RuntimeError:
             print("Fit failed: skipping curve fit")

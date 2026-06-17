@@ -24,7 +24,7 @@ from FileImport import file0000, file0001, file1233, file1255, file1278, file128
 def main():
     hourLogger = DataLogging.oneHourAggregator()  # Instantiates the hour logger
 
-    for i in range(5):
+    for i in range(1000):
         file = FileImport.load_waveform(file1288)                   # Imports the file
         processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
 
@@ -40,14 +40,14 @@ def main():
         calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
         concentration = calibrator.linearFunction()                 # Returns concentration value AND error
         error = 0.1 * concentration[0] + concentration[1]
-        print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
+        # print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
 
         # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
         unixtime = time.time()+32400
         hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
-        time.sleep(1)
+        # time.sleep(1)
 
-    for i in range(5):
+    for i in range(1000):
         file = FileImport.load_waveform(file1278)                   # Imports the file
         processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
 
@@ -63,14 +63,14 @@ def main():
         calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
         concentration = calibrator.linearFunction()                 # Returns concentration value AND error
         error = 0.1 * concentration[0] + concentration[1]
-        print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
+        # print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
 
         # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
         unixtime = time.time()+32400
         hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
-        time.sleep(1)
+        # time.sleep(1)
 
-    for i in range(5):
+    for i in range(1000):
         file = FileImport.load_waveform(file1233)                   # Imports the file
         processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
 
@@ -86,12 +86,12 @@ def main():
         calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
         concentration = calibrator.linearFunction()                 # Returns concentration value AND error
         error = 0.1 * concentration[0] + concentration[1]
-        print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
+        # print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
 
         # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
         unixtime = time.time()+32400
         hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
-        time.sleep(1)
+        # time.sleep(1)
 
     LongTermGraph = Grapher.MinutelyGraph(hourLogger.oneDayCache)
     LongTermGraph.plotLongTerm()
