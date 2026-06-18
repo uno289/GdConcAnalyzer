@@ -7,7 +7,6 @@
 
 import plotly as pl
 import pandas as pd
-
 # ============================================
 # Code
 
@@ -79,7 +78,7 @@ class MinutelyGraph:
                 x=df['date'],
                 y=df['y_data'],
                 error_y=dict(type="data", array=self.error_data, visible=True),
-                mode="lines",
+                mode="lines+markers",
                 hovertemplate='Time: %{x}<br>Concentration: %{y} %<extra></extra>'
             )
         )

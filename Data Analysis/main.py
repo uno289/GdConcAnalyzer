@@ -3,7 +3,7 @@
 # Purpose: Call other scripts to create
 #   minutely, hourly, daily analyses, graphs,
 #   etc.
-# NOTE: Will stay running 24/7
+# NOTE: Stays running 24/7 if not aborted!
 # ============================================
 # Imports
 import numpy as np
@@ -22,76 +22,41 @@ from FileImport import file0000, file0001, file1233, file1255, file1278, file128
 
 # Currently just some test cases
 def main():
-    hourLogger = DataLogging.oneHourAggregator()  # Instantiates the hour logger
+    hourLogger = DataLogging.oneHourAggregator()                        # Instantiates the hour logger
 
-    for i in range(5):
-        file = FileImport.load_waveform(file1288)                   # Imports the file
-        processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
+    while True:                                                         # Loop keeps the program running forever
+        scanner = FileImport.scanNewFile()                              # Continuously scans for a new file
+        file_path = scanner.scanFile()                                  # If a file exists, this locates it
 
-        Ch1V = processor.zero_baseline()                            # Zeroes out the baseline voltage
-        timeAxis = np.arange(len(file.Ch1V)) * file.deltaTime       # Time axis for the graphing function
+        if file_path is not None:
+            file = FileImport.load_waveform(file_path)                  # Imports the file
 
-        testrun = ExponentialFit.ExponentialFit(Ch1V, timeAxis)     # Feeds in time and voltage data for exp fit
-        fit = testrun.estimate_fit()                                # Performs exp fit
+            # EVENTUALLY THE AVERAGER GOES HERE
 
-        '''Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
-        Graph.plot()'''
+            processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
 
-        calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
-        concentration = calibrator.linearFunction()                 # Returns concentration value AND error
-        error = 0.1 * concentration[0] + concentration[1]
-        # print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
+            Ch1V = processor.zero_baseline()                            # Zeroes out the baseline voltage
+            timeAxis = np.arange(len(file.Ch1V)) * file.deltaTime       # Time axis for the graphing function
 
-        # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
-        unixtime = time.time()+32400
-        hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
-        # time.sleep(1)
+            testrun = ExponentialFit.ExponentialFit(Ch1V, timeAxis)     # Feeds in time and voltage data for exp fit
+            fit = testrun.estimate_fit()                                # Performs exp fit
 
-    for i in range(5):
-        file = FileImport.load_waveform(file1278)                   # Imports the file
-        processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
+            '''Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
+            Graph.plot()'''
 
-        Ch1V = processor.zero_baseline()                            # Zeroes out the baseline voltage
-        timeAxis = np.arange(len(file.Ch1V)) * file.deltaTime       # Time axis for the graphing function
+            calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
+            concentration = calibrator.linearFunction()                 # Returns concentration value AND error
+            error = 0.1 * concentration[0] + concentration[1]
+            # print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
 
-        testrun = ExponentialFit.ExponentialFit(Ch1V, timeAxis)     # Feeds in time and voltage data for exp fit
-        fit = testrun.estimate_fit()                                # Performs exp fit
+            # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
+            unixtime = time.time()+32400
+            hourLogger.addSample([unixtime, concentration[0], error])   # Logs the time, concentration, and error into file
 
-        '''Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
-        Graph.plot()'''
-
-        calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
-        concentration = calibrator.linearFunction()                 # Returns concentration value AND error
-        error = 0.1 * concentration[0] + concentration[1]
-        # print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
-
-        # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
-        unixtime = time.time()+32400
-        hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
-        # time.sleep(1)
-
-    for i in range(5):
-        file = FileImport.load_waveform(file1233)                   # Imports the file
-        processor = SignalProcessor.SignalProcessor(file.Ch1V)      # Loads the file into the zeroing function
-
-        Ch1V = processor.zero_baseline()                            # Zeroes out the baseline voltage
-        timeAxis = np.arange(len(file.Ch1V)) * file.deltaTime       # Time axis for the graphing function
-
-        testrun = ExponentialFit.ExponentialFit(Ch1V, timeAxis)     # Feeds in time and voltage data for exp fit
-        fit = testrun.estimate_fit()                                # Performs exp fit
-
-        '''Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
-        Graph.plot()'''
-
-        calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
-        concentration = calibrator.linearFunction()                 # Returns concentration value AND error
-        error = 0.1 * concentration[0] + concentration[1]
-        # print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
-
-        # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
-        unixtime = time.time()+32400
-        hourLogger.addSample([unixtime, concentration[0], error])       # Logs the time, concentration, and error into file
-        # time.sleep(1)
+            fileMover = FileImport.MoveFile(file_path)                  # Loads the file mover (post-processing)
+            fileMover.moveFile()                                        # Moves the processed file out
+            # time.sleep(1)
+            break                                                       # TEMPORARY BREAKPOINT
 
     LongTermGraph = Grapher.MinutelyGraph(hourLogger.oneDayCache)
     LongTermGraph.plotLongTerm()

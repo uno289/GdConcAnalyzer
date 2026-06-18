@@ -8,6 +8,7 @@
 
 import os
 import csv
+import shutil
 
 # File declarations
 
@@ -22,9 +23,31 @@ file1293 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data
 file1298 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1298.CSV")
 file1303 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1303.CSV")
 
+newData = "/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/New"
+processedData = "/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Processed"
 
 # ============================================
 # Code
+class scanNewFile:
+    def __init__(self):
+        pass
+    def scanFile(self):
+        files = os.listdir(newData)
+        for file in files:
+            if file.endswith(".CSV"):
+                return os.path.join(newData, file)
+        return None
+
+class MoveFile:
+    def __init__(self, fileName):
+        self.fileName = fileName
+    def moveFile(self):
+        destination = os.path.join(processedData, os.path.basename(self.fileName))
+        try:
+            shutil.move(self.fileName, processedData)
+        except:
+            os.remove(destination)
+            shutil.move(self.fileName, processedData)
 
 class FileReader:
     def __init__(self, fileName):
