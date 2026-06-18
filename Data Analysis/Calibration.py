@@ -5,14 +5,19 @@
 #   find concentration.
 # ============================================
 # Imports and File Definitions
-# --------------------------------------------
-# Code
 import ExponentialFit
+# --------------------------------------------
 
+# Code
+# --------------------------------------------
+
+# This class is quite simple. The calibration is a linear equation, so we just take 3 data points, find the line of
+# best fit, and place its slope under self.slope. From there, the V_0 * tau value and error are just divided by the
+# slope to find our concentrations.
 class Calibration:
     def __init__(self, V0_tau, Error_sqrt):
-        self.slope = 0.000113781 # THIS ONLY WORKS FOR 1233, 1278, 1288!!!
-        # self.slope = 0.00020634 # THIS ONLY WORKS FOR 1255, 1283, 1293!!!
+        self.slope = 0.000113781                        # THIS ONLY WORKS FOR 1233, 1278, 1288!!!
+        # self.slope = 0.00020634                       # THIS ONLY WORKS FOR 1255, 1283, 1293!!!
         self.V0_tau = V0_tau
         self.Error_sqrt = Error_sqrt
     def linearFunction(self):

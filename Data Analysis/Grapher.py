@@ -8,12 +8,11 @@
 import plotly as pl
 import pandas as pd
 # ============================================
+
 # Code
-
-# Currently, all placeholders test the old data sets
 # --------------------------------------------
-# Test graphing
 
+# Single-trace graphing
 class Grapher:
     def __init__(self, testrun, Ch1V, timeAxis):
         self.testrun = testrun
@@ -49,10 +48,13 @@ class Grapher:
         fig.update_layout(
             title= "Placeholder",
             xaxis_title="Time (s)",
-            yaxis_title="Voltage (V) (ZEROED)",
+            yaxis_title="Voltage (mV) (ZEROED)",
         )
 
-        fig.show()
+        fig.write_html(
+            '/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Results/current_trace.html', auto_open=False
+        )
+# --------------------------------------------
 
 class MinutelyGraph:
     def __init__(self,data):
@@ -87,5 +89,8 @@ class MinutelyGraph:
             xaxis_title="Time (Unix)",
             yaxis_title="Concentration",
         )
-        fig.show()
+        fig.write_html(
+            '/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Results/minutely_graph.html',auto_open=False
+        )
+
 

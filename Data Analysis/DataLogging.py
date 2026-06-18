@@ -15,28 +15,7 @@ tenMinuteData = "/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/tenM
 # ============================================
 # Code
 
-# This class holds onto what comes out of FileImport at 10Hz, until 600 samples are collected.
-# Once we have 600 samples, the entire dataset gets fed back to main to be smoothed.
-# --------------------------------------------
-
-class oneMinuteBuffer:
-    def __init__(self):
-        self.buffer = []
-
-    def addSample(self, sample):
-        self.buffer.append(sample)
-        # print("Added sample: ", sample)
-
-        if len(self.buffer) >= 600:
-            minuteDataSet = self.buffer.copy()
-            self.buffer.clear()
-            #print("One minute dataset: ", minuteDataSet)
-            #print("Buffer cleared")
-            return minuteDataSet
-        return None
-
-# --------------------------------------------
-# Longer-term data storage here. Data held here is [timestamp, concentration].
+# Longer-term data storage here. Data held here is [timestamp, concentration, error].
 # Marked difference is instead of just returning data, this will hold long-term data for graphing and storage.
 
 # There are aggregators, which just hold the data for making the data for the next level up (hourly
