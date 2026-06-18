@@ -44,13 +44,14 @@ def main():
             '''Graph = Grapher.Grapher(testrun, Ch1V, timeAxis)            # Graphs individual trace
             Graph.plot()'''
 
-            calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)        # Loading the V_0 * tau value into the calibrator
+            calibrator = Calibration.Calibration(
+                testrun.V0_tau,testrun.Error_sqrt)              # Loading the V_0 * tau value into the calibrator
+
             concentration = calibrator.linearFunction()                 # Returns concentration value AND error
-            error = 0.1 * concentration[0] + concentration[1]
-            # print("Concentration = ",round(concentration[0],5), "+/-", round(error,5))
+            error = 0.1 * concentration[0] + concentration[1]           # Systematic error = 10%, adding the uncertainty
 
             # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
-            unixtime = time.time()+32400
+            unixtime = time.time()+32400                                # Shifts time zone to Japan time (TEMP)
             hourLogger.addSample([unixtime, concentration[0], error])   # Logs the time, concentration, and error into file
 
             fileMover = FileImport.MoveFile(file_path)                  # Loads the file mover (post-processing)
