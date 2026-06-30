@@ -8,6 +8,8 @@
 # Imports
 import numpy as np
 import time
+import csv
+import collections
 
 import DataLogging
 import Grapher
@@ -15,59 +17,165 @@ import ExponentialFit
 import SignalProcessor
 import Calibration
 import FileImport
-from FileImport import file0000, file0001, file1233, file1255, file1278, file1283, file1288, file1293, file1298, file1303
+import eventlogger
 
+# File declarations
+heartbeat = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Heartbeat.csv"
+wavedumpcheck = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\wavedumpHB.csv"
+eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventLog.csv"
+startup = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\startup.csv"
+runs = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\runcount.csv"
 # ============================================
 # Code
 
 # Currently just some test cases
 def main():
+
+    eventlogger.log_event("Analyzer","INFO","Process started.")
+
+    with open(startup, "w") as f:
+        f.write(str(time.time()))                                       # Used to keep track of startup/uptime
+
+    with open(runs, "w") as f:                                          # Resets the run counter
+        f.write(str(0))
+
     hourLogger = DataLogging.oneHourAggregator()                        # Instantiates the hour logger
+    dayLogger = DataLogging.oneDayAggregator()                          # Instantiates the day cache
+    yearLogger = DataLogging.oneMonthAggregator()                       # Instantiates the year cache
+
+    MinuteCSV = DataLogging.oneMinuteFile
+    HourCSV = DataLogging.HourlyFile
+    DayCSV = DataLogging.DailyFile
+
+    try:
+        with open(MinuteCSV,'r', newline = '') as r:
+            newest_rows = collections.deque(csv.reader(r),maxlen=1440)
+            for i,row in enumerate(newest_rows):
+                if i > 0:
+                    hourLogger.oneDayCache.append([row[0], row[1], row[2]])
+    except:
+        eventlogger.log_event("Analyzer","INFO","Empty minute cache. Instantiating minute graph with no data.")
+
+    try:
+        with open(HourCSV,'r', newline = '') as r:
+            newest_rows = collections.deque(csv.reader(r),maxlen=168)
+            for i, row in enumerate(newest_rows):
+                if i > 0:
+                    dayLogger.oneWeekCache.append([row[0], row[1], row[2]])
+    except:
+        eventlogger.log_event("Analyzer","INFO","Empty hour cache. Instantiating hour graph with no data.")
+
+    try:
+        with open(DayCSV,'r', newline = '') as r:
+            newest_rows = collections.deque(csv.reader(r),maxlen=365)
+            for i,row in enumerate(newest_rows):
+                if i>0:
+                    yearLogger.oneYearCache.append([row[0], row[1], row[2]])
+    except:
+        eventlogger.log_event("Analyzer","INFO","Empty day cache. Instantiating day graph with no data.")
+
 
     while True:                                                         # Loop keeps the program running forever
         scanner = FileImport.scanNewFile()                              # Continuously scans for a new file
         file_path = scanner.scanFile()                                  # If a file exists, this locates it
 
         if file_path is not None:
-            print("File found. Analyzing...")
-            file = FileImport.load_waveform(file_path)                  # Imports the file
-            listoflists = file.fullList                                 # All 600 runs, each one is 165 samples
+            eventlogger.log_event("Analyzer","INFO","File found. Analyzing...")
+            try:
+                file = FileImport.load_waveform(file_path)                  # Imports the file
+                listoflists = file.fullList                                 # All 600 runs, each one is 165 samples
 
-            avg = SignalProcessor.Averager(listoflists)
-            avg.align()
-            Ch1V = avg.average()
+                with open(wavedumpcheck, "w") as f:
+                    f.write(str(time.time()))
 
-            processor = SignalProcessor.SignalProcessor(Ch1V)           # Loads the file into the zeroing function
+                avg = SignalProcessor.Averager(listoflists)
+                avg.align()
+                Ch1V = avg.average()
 
-            Ch1VZeroed = processor.zero_baseline()                      # Zeroes out the baseline voltage
-            timeAxis = np.arange(len(Ch1VZeroed)) * file.deltaTime      # Time axis for the graphing function
+                processor = SignalProcessor.SignalProcessor(Ch1V)           # Loads the file into the zeroing function
 
-            testrun = ExponentialFit.ExponentialFit(Ch1VZeroed, timeAxis)     # Feeds in time and voltage data for exp fit
-            fit = testrun.estimate_fit()                                # Performs exp fit
+                Ch1VZeroed = processor.zero_baseline()                      # Zeroes out the baseline voltage
+                timeAxis = np.arange(len(Ch1VZeroed)) * file.deltaTime      # Time axis for the graphing function
 
-            Graph = Grapher.Grapher(testrun, Ch1VZeroed, timeAxis)            # Graphs individual trace
-            Graph.plot()
+                testrun = ExponentialFit.ExponentialFit(Ch1VZeroed, timeAxis)     # Feeds in time and voltage data for exp fit
+                fit = testrun.estimate_fit()                                      # Performs exp fit
+
+                Graph = Grapher.Grapher(testrun, Ch1VZeroed, timeAxis)            # Graphs individual trace
+                Graph.plot()
+
+                calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)  # Loading the V_0 * tau value into the calibrator
+
+                concentration = calibrator.linearFunction()                 # Returns concentration value AND error
+                error = 0.1 * concentration[0] + concentration[1]           # Systematic error = 10%, adding the uncertainty
+
+                # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
+                unixtime = time.time()+32400                                # Shifts time zone to Japan time (TEMP)
+                hourLogger.addSample([unixtime, concentration[0], error])   # Logs the time, concentration, and error into file
+
+                fileMover = FileImport.MoveFile(file_path)                  # Loads the file mover (post-processing)
+                fileMover.moveFile()                                        # Moves the processed file out
+                # time.sleep(1)
+
+                try:
+                    if len(hourLogger.oneHourData) >= 60:
+                        eventlogger.log_event("Analyzer","INFO","Hourly graph updated with most recent average.")
+                        houravg = np.average([s[1] for s in hourLogger.oneHourData])
+                        hourerror = np.average([s[2] for s in hourLogger.oneHourData])
+                        hourtime = time.time() + 32400
+                        dayLogger.addSample([hourtime, houravg, hourerror])
+                        hourLogger.oneHourData.clear()
+
+                except RuntimeError:
+                    eventlogger.log_event("Analyzer","ERROR","Error encountered when adjusting hourly average!", Exception)
+                    pass
+
+                try:
+                    if len(dayLogger.oneDayData) >= 24:
+                        eventlogger.log_event("Analyzer","INFO","Daily graph updated with most recent average.")
+                        dayavg = np.average([s[1] for s in dayLogger.oneDayData])
+                        hourerror = np.average([s[2] for s in dayLogger.oneDayData])
+                        daytime = time.time() + 32400
+                        yearLogger.addSample([daytime, dayavg, hourerror])
+                        dayLogger.oneDayData.clear()
+
+                except RuntimeError:
+                    eventlogger.log_event("Analyzer", "ERROR", "Error encountered when adjusting daily average!", Exception)
+                    pass
 
 
-            calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)              # Loading the V_0 * tau value into the calibrator
+                MinutelyOneDayGraph = Grapher.MinutelyGraph(hourLogger.oneDayCache)   # Loads the minutely grapher
+                MinutelyOneDayGraph.plotMinutely()                                    # Graphs the minutely concentration for the past day
 
-            concentration = calibrator.linearFunction()                 # Returns concentration value AND error
-            error = 0.1 * concentration[0] + concentration[1]           # Systematic error = 10%, adding the uncertainty
+                HourlyOneWeekGraph = Grapher.HourlyGraph(dayLogger.oneWeekCache)      # Loads the hourly grapher
+                HourlyOneWeekGraph.plotHourly()                                     # Graphs the average hourly concentration for past week
 
-            # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
-            unixtime = time.time()+32400                                # Shifts time zone to Japan time (TEMP)
-            hourLogger.addSample([unixtime, concentration[0], error])   # Logs the time, concentration, and error into file
+                DailyOneYearGraph = Grapher.DailyGraph(yearLogger.oneYearCache)       # Loads the daily grapher
+                DailyOneYearGraph.plotDaily()                                      # Graphs the average daily concentration for past year
 
-            fileMover = FileImport.MoveFile(file_path)                  # Loads the file mover (post-processing)
-            fileMover.moveFile()                                        # Moves the processed file out
-            # time.sleep(1)
+                eventlogger.log_event("Analyzer","INFO","Loop successful. Sleeping for 30 seconds...")
 
-            LongTermGraph = Grapher.MinutelyGraph(hourLogger.oneDayCache)   # Loads the minutely grapher
-            LongTermGraph.plotLongTerm()                                # Graphs the minutely concentration for the past day
+            except Exception as e:
+                eventlogger.log_event("Analyzer","ERROR","RuntimeError encountered. Sleeping for 30 seconds...")
+                unixtime = time.time()
+                log = DataLogging.errorLogger(unixtime, e)
+                log.errorLogging()
 
-        print("Loop successful. Sleeping for 5 seconds...")
-        time.sleep(5)
+                fileMover = FileImport.MoveFile(file_path)  # Loads the file mover (post-processing)
+                fileMover.moveFile()
+        else:
+            pass
+            eventlogger.log_event("Analyzer","INFO","No file. Sleeping for 30 seconds...")
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':                                              # Necessary to run script
+        with open(heartbeat,"w") as f:
+            f.write(str(time.time()))
+
+        with open(runs,"r+") as f:
+            runcount = int(f.read())
+            f.seek(0)
+            f.write(str(runcount+1))
+            f.truncate()
+
+        time.sleep(30)                                     # Time in seconds between each pass (set to 1/2 reception time)
+
+if __name__ == '__main__':                                  # Necessary to run script
     main()

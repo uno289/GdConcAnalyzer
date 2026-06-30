@@ -1,0 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap");
+
+body {
+    font-family: Inter, sans-serif;
+}
+.nav-tabs {
+    display: flex;
+    justify-content: center;
+}
+.nav-tabs .nav-item {
+    flex: 1;
+    text-align: center;
+}
+.btn,.nav-link,.card-header,.card-body,.table {
+    font-family: "Rajdhani", sans-serif;
+}

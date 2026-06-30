@@ -1,0 +1,60 @@
+Timestamp,Error Log
+1782153400.8129177,'_csv.reader' object is not subscriptable
+1782153434.4994462,"setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (600,) + inhomogeneous part."
+1782153735.1284602,"setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (600,) + inhomogeneous part."
+1782153788.0395415,"setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (600,) + inhomogeneous part."
+1782153944.3530793,"setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (600,) + inhomogeneous part."
+1782154078.8013933,"setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (600,) + inhomogeneous part."
+1782154145.9309242,"setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (600,) + inhomogeneous part."
+1782154546.259518,"setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (600,) + inhomogeneous part."
+1782155542.533075,could not convert string to float: 'Timestamp'
+1782155569.8857338,could not convert string to float: 'Timestamp'
+1782155920.300733,could not convert string to float: 'Timestamp'
+1782156007.9052882,could not convert string to float: 'Timestamp'
+1782157952.5751112,could not convert string to float: ''
+1782157979.625862,could not convert string to float: ''
+1782743477.1850429,"
+    Invalid value of type 'builtins.str' received for the 'bgcolor' property of layout.legend
+        Received value: '255,255,255,0.7'
+
+    The 'bgcolor' property is a color and may be specified as:
+      - A hex string (e.g. '#ff0000')
+      - An rgb/rgba string (e.g. 'rgb(255,0,0)')
+      - An hsl/hsla string (e.g. 'hsl(0,100%,50%)')
+      - An hsv/hsva string (e.g. 'hsv(0,100%,100%)')
+      - A named CSS color: see https://plotly.com/python/css-colors/ for a list"
+1782743537.3742878,"
+    Invalid value of type 'builtins.str' received for the 'bgcolor' property of layout.legend
+        Received value: '255,255,255,0.7'
+
+    The 'bgcolor' property is a color and may be specified as:
+      - A hex string (e.g. '#ff0000')
+      - An rgb/rgba string (e.g. 'rgb(255,0,0)')
+      - An hsl/hsla string (e.g. 'hsl(0,100%,50%)')
+      - An hsv/hsva string (e.g. 'hsv(0,100%,100%)')
+      - A named CSS color: see https://plotly.com/python/css-colors/ for a list"
+1782743567.6107624,"
+    Invalid value of type 'builtins.str' received for the 'bgcolor' property of layout.legend
+        Received value: '255,255,255,0.7'
+
+    The 'bgcolor' property is a color and may be specified as:
+      - A hex string (e.g. '#ff0000')
+      - An rgb/rgba string (e.g. 'rgb(255,0,0)')
+      - An hsl/hsla string (e.g. 'hsl(0,100%,50%)')
+      - An hsv/hsva string (e.g. 'hsv(0,100%,100%)')
+      - A named CSS color: see https://plotly.com/python/css-colors/ for a list"
+1782743627.836877,"
+    Invalid value of type 'builtins.str' received for the 'bgcolor' property of layout.legend
+        Received value: '255,255,255,0.7'
+
+    The 'bgcolor' property is a color and may be specified as:
+      - A hex string (e.g. '#ff0000')
+      - An rgb/rgba string (e.g. 'rgb(255,0,0)')
+      - An hsl/hsla string (e.g. 'hsl(0,100%,50%)')
+      - An hsv/hsva string (e.g. 'hsv(0,100%,100%)')
+      - A named CSS color: see https://plotly.com/python/css-colors/ for a list"
+1782754239.0367167,"too many indices for array: array is 0-dimensional, but 1 were indexed"
+1782754299.2093198,"too many indices for array: array is 0-dimensional, but 1 were indexed"
+1782754389.3547833,"too many indices for array: array is 0-dimensional, but 1 were indexed"
+1782804455.9243453,[Errno 2] No such file or directory: 'current_trace.html'
+1782804486.4331715,[Errno 2] No such file or directory: 'current_trace.html'

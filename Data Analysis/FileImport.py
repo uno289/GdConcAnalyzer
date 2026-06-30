@@ -11,23 +11,16 @@
 import os
 import csv
 import shutil
+import time
+import DataLogging
+import eventlogger
 
 # --------------------------------------------
 # File declarations
 
-file0000 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC0000.CSV")
-file0001 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC0001.CSV")
-file1233 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1233.CSV")
-file1255 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1255.CSV")
-file1278 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1278.CSV")
-file1283 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1283.CSV")
-file1288 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1288.CSV")
-file1293 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1293.CSV")
-file1298 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1298.CSV")
-file1303 = ("/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Old Data/WASC1303.CSV")
+newData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\New"                                  # Input data
+processedData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Processed"                      # Dump folder after analysis
 
-newData = "/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/New"                      # Input data
-processedData = "/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Processed"          # Dump folder after analysis
 
 # ============================================
 # Code
@@ -39,23 +32,36 @@ class scanNewFile:
         pass
     def scanFile(self):
         files = os.listdir(newData)
+        fileSizeb = 4450000
         for file in files:
             if file.endswith(".txt"):
-                return os.path.join(newData, file)
+                filepath = os.path.join(newData, file)
+                if os.path.getsize(filepath)>fileSizeb:
+                    filesize1 = os.path.getsize(filepath)
+                    #time.sleep(2)
+                    filesize2 = os.path.getsize(filepath)
+                    if filesize1!=filesize2:
+                        pass
+                    else:
+                        return os.path.join(newData, file)
         return None
 # --------------------------------------------
 
-# Runs only when a file is in newData. After file is analyzed, tosses the file into processedData. Currently OVERWRITES FILES {os.remove(destination)}
+# Runs only when a file is in newData. After file is analyzed, tosses the file into processedData.
+# Currently OVERWRITES FILES {os.remove(destination)}
 class MoveFile:
     def __init__(self, fileName):
         self.fileName = fileName
     def moveFile(self):
         destination = os.path.join(processedData, os.path.basename(self.fileName))
         try:
+            if os.path.exists(destination):
+                os.remove(destination)
             shutil.move(self.fileName, processedData)
-        except:
-            os.remove(destination)
-            shutil.move(self.fileName, processedData)
+        except PermissionError:
+            message = "File still in use. Will retry next scan..."
+            ErrorLog = DataLogging.errorLogger(time.time(), message)
+            eventlogger.log_event("Analyzer","WARNING", message)
 # --------------------------------------------
 
 # Runs after file is found. Creates a list with Ch1 voltages split by trace for all 600 traces. Also stores time constant for ADC.

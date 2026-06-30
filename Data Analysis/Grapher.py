@@ -7,6 +7,8 @@
 
 import plotly as pl
 import pandas as pd
+
+current_trace = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\current_trace.html"
 # ============================================
 
 # Code
@@ -46,20 +48,32 @@ class Grapher:
             )
 
         fig.update_layout(
-            title= "Placeholder",
-            xaxis_title="Time (s)",
-            yaxis_title="Voltage (mV) (ZEROED)",
-        )
+            title= "600 Traces Averaged",
+            xaxis_title="Time",
+            yaxis_title="Calibrated Voltage (mV)",
+            font=dict(family="Rajdhani,sans-serif")
+            )
 
         fig.write_html(
-            '/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Results/current_trace.html', auto_open=False
+            r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\current_trace.html", auto_open=False
         )
+        with open(current_trace, "r", encoding="utf-8") as f:
+            html=f.read()
+
+        font_tag = """
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+        """
+        html = html.replace("<head>","<head\n>" + font_tag)
+        with open(current_trace, "w", encoding="utf-8") as f:
+            f.write(html)
 # --------------------------------------------
 
 class MinutelyGraph:
     def __init__(self,data):
         self.data = data
-    def plotLongTerm(self):
+    def plotMinutely(self):
         self.timeStamp = []
         self.y_data = []
         self.error_data = []
@@ -79,18 +93,103 @@ class MinutelyGraph:
                 name='Long-term Concentration (Minutely)',
                 x=df['date'],
                 y=df['y_data'],
+                mode="lines",
+                hovertemplate='Time: %{x}<br>Concentration: %{y} %<extra></extra>'
+            )
+        )
+        fig.update_layout(
+            title= "Minutely Concentration",
+            xaxis_title="Time (JST)",
+            yaxis_title="Concentration",
+        )
+        fig.update_xaxes(
+            tickformat='%b %d %H:%M:%S'
+        )
+        fig.write_html(
+            r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\minutely_graph.html",auto_open=False
+        )
+        return fig
+
+class HourlyGraph:
+    def __init__(self,data):
+        self.data = data
+    def plotHourly(self):
+        self.timeStamp = []
+        self.y_data = []
+        self.error_data = []
+
+        for i in self.data:
+            self.timeStamp.append(float(i[0]))
+            self.y_data.append(float(i[1]))
+            self.error_data.append(float(i[2]))
+
+        data = {'timestamp': self.timeStamp, 'y_data': self.y_data, 'error': self.error_data}
+        df = pd.DataFrame(data)
+        df['date'] = pd.to_datetime(df['timestamp'], unit='s')
+
+        fig = pl.graph_objs.Figure()
+        fig.add_trace(
+            pl.graph_objs.Scatter(
+                name='Long-term Concentration (Hourly)',
+                x=df['date'],
+                y=df['y_data'],
                 error_y=dict(type="data", array=self.error_data, visible=True),
                 mode="lines+markers",
                 hovertemplate='Time: %{x}<br>Concentration: %{y} %<extra></extra>'
             )
         )
         fig.update_layout(
-            title= "Minutely Concentration",
-            xaxis_title="Time (Unix)",
+            title= "Hourly Concentration",
+            xaxis_title="Time (JST)",
+            yaxis_title="Concentration",
+        )
+        fig.update_xaxes(
+            tickformat='%b %d, %H:%M'
+        )
+        fig.write_html(
+            r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\hourly_graph.html",auto_open=False
+        )
+        return fig
+
+class DailyGraph:
+    def __init__(self,data):
+        self.data = data
+    def plotDaily(self):
+        self.timeStamp = []
+        self.y_data = []
+        self.error_data = []
+
+        for i in self.data:
+            self.timeStamp.append(float(i[0]))
+            self.y_data.append(float(i[1]))
+            self.error_data.append(float(i[2]))
+
+        data = {'timestamp': self.timeStamp, 'y_data': self.y_data, 'error': self.error_data}
+        df = pd.DataFrame(data)
+        df['date'] = pd.to_datetime(df['timestamp'], unit='s')
+
+        fig = pl.graph_objs.Figure()
+        fig.add_trace(
+            pl.graph_objs.Scatter(
+                name='Long-term Concentration (Daily)',
+                x=df['date'],
+                y=df['y_data'],
+                error_y=dict(type="data", array=self.error_data, visible=True),
+                mode="lines+markers",
+                hovertemplate='Date: %{x}<br>Concentration: %{y} %<extra></extra>'
+            )
+        )
+        fig.update_xaxes(
+            title="Time (JST)",
+            tickformat='%b %d %Y, %H:%M'
+        )
+        fig.update_layout(
+            title= "Daily Concentration",
+            xaxis_title="Date (JST)",
             yaxis_title="Concentration",
         )
         fig.write_html(
-            '/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/Results/minutely_graph.html',auto_open=False
+            r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\daily_graph.html",auto_open=False
         )
-
+        return fig
 

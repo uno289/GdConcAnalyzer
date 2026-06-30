@@ -9,8 +9,11 @@
 import csv
 import collections
 
-tenMinuteData = "/Users/keshavanand/PycharmProjects/GadoliniumAnalysis/Data/tenMinuteData.csv"
-
+oneMinuteFile = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\oneMinuteData.csv"
+tenMinuteFile = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\tenMinuteData.csv"
+HourlyFile = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\hourlyData.csv"
+DailyFile = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\dailyData.csv"
+errorLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\errorLog.csv"
 
 # ============================================
 # Code
@@ -30,6 +33,10 @@ class oneHourAggregator:
         self.oneHourData = []
         self.oneDayCache = collections.deque(maxlen=1440) # Rolling cache of 1d of minutely averages
         self.tenMinuteData = []
+        self.hourDataSet = []
+
+    def __len__(self):
+        return len(self.oneHourData)
 
     def addSample(self, sample):
         self.oneHourData.append(sample)
@@ -37,6 +44,9 @@ class oneHourAggregator:
 
         self.tenMinuteData.append(sample) # This one is just for keeping permanent data
         # print("Added sample: ", sample)
+        with open(oneMinuteFile, 'a', newline='') as oneMinuteDataFile:
+            writer = csv.writer(oneMinuteDataFile)
+            writer.writerow(sample)
 
         if len(self.tenMinuteData) >= 10:
             tenMinuteDataSet = self.tenMinuteData.copy() # this dataset here just holds a list of 10 timestamps and concentrations
@@ -51,18 +61,13 @@ class oneHourAggregator:
                 errorMax = errorMax + i[2]
                 tenMinuteError = errorMax / len(tenMinuteDataSet)
 
-            with open(tenMinuteData, 'a', newline='') as tenMinuteDataFile: # Writing the 10m average to the permanent CSV for storage
+            with open(tenMinuteFile, 'a', newline='') as tenMinuteDataFile: # Writing the 10m average to the permanent CSV for storage
                 writer = csv.writer(tenMinuteDataFile)
                 writer.writerow([tenMinuteDataSet[-1][0],tenMinuteAverage,tenMinuteError])
             self.tenMinuteData.clear()
 
         if len(self.oneHourData) >= 60:
-            hourDataSet = self.oneHourData.copy()
-            self.oneHourData.clear()
-            #print("One hour dataset: ", hourDataSet)
-            #print(len(hourDataSet))
-            #print("Buffer cleared")
-            return hourDataSet
+            self.hourDataSet = self.oneHourData.copy()
         return None
 
 class oneDayAggregator:
@@ -70,13 +75,18 @@ class oneDayAggregator:
         self.oneDayData = []
         self.oneWeekCache = collections.deque(maxlen=168) # Rolling cache of 1wk of hourly averages
 
+    def __len__(self):
+        return len(self.oneDayData)
+
     def addSample(self, sample):
         self.oneDayData.append(sample)
         self.oneWeekCache.append(sample)
+        with open(HourlyFile, 'a', newline='') as hourlyDataFile:
+            writer = csv.writer(hourlyDataFile)
+            writer.writerow(sample)
 
         if len(self.oneDayData) >= 24:
             dayDataSet = self.oneDayData.copy()
-            self.oneDayData.clear()
             return dayDataSet
         return None
 
@@ -86,15 +96,26 @@ class oneMonthAggregator:
         self.oneMonthData = []
         self.oneYearCache = collections.deque(maxlen=365) #Rolling cache of 1yr of daily averages
 
+    def __len__(self):
+        return len(self.oneMonthData)
+
     def addSample(self, sample):
         self.oneMonthData.append(sample)
         self.oneYearCache.append(sample)
 
+        with open(DailyFile, 'a', newline='') as dailyDataFile:
+            writer = csv.writer(dailyDataFile)
+            writer.writerow(sample)
+
         if len(self.oneMonthData) >= 30:
             monthDataSet = self.oneMonthData.copy()
-            self.oneMonthData.clear()
             return monthDataSet
         return None
 
-
-
+class errorLogger:
+    def __init__(self, errorTime, errorLog):
+        self.errorLogData = [errorTime, errorLog]
+    def errorLogging(self, ):
+        with open(errorLog, 'a', newline='') as errorLogFile:
+            writer = csv.writer(errorLogFile)
+            writer.writerow([self.errorLogData[0], self.errorLogData[1]])
