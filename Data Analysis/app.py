@@ -28,7 +28,7 @@ eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventlogger.csv"
 
 # Versioning (For footer)
 VERSION = "0.95"
-UPDATED = "2026-06-30"
+UPDATED = "2026-07-01"
 with open(startup, "r") as f:
     starttime = float(f.read())
     STARTUP = datetime.datetime.fromtimestamp(int(starttime))
@@ -36,14 +36,14 @@ with open(startup, "r") as f:
 with open(runs,"r") as f:
     runcount = f.read()
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.FLATLY],suppress_callback_exceptions=True)
+app = Dash(__name__, external_stylesheets=[dbc.themes.FLATLY],suppress_callback_exceptions=True,title="SK-Gc Concentration Monitor",update_title=None)
 
 app.index_string = """
 <!DOCTYPE html>
 <html>
     <head>
         {%metas%}
-        <title>Super-Kamiokande Monitor</title>
+        <title>SK-Gd Concentration Monitor</title>
         {%favicon%}
         {%css%}
         <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
@@ -258,7 +258,7 @@ app.layout =(
     html.Footer(
         dbc.Card(
             dbc.CardBody(dbc.Row([
-                dbc.Col(f"Sk-Gd Monitor v{VERSION}",width=4),
+                dbc.Col(f"Sk-Gd Concentration Monitor v{VERSION}",width=4),
                 dbc.Col(f"Updated {UPDATED}",width=4),
                 dbc.Col("Yoshihiro Iwata, Keshav Anand, Hiroyuki Sekiya",width=4),
             ],style={"textAlign":"center"}))
@@ -532,6 +532,10 @@ def update_event_log(_):
     except Exception as e:
         return [],[]
 
-
+USE_WAITRESS = True
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",port=8050,debug=False,threaded=True)
+    if USE_WAITRESS:
+        from waitress import serve
+        serve(app.server, host = "0.0.0.0", port = 8050, threads=16)
+    else:
+        app.run(host="0.0.0.0",port=8050,debug=False,threaded=True)
