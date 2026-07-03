@@ -18,6 +18,7 @@ import SignalProcessor
 import Calibration
 import FileImport
 import eventlogger
+import EmailAlert
 
 # File declarations
 heartbeat = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Heartbeat.csv"
@@ -30,8 +31,10 @@ runs = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\runcount.csv"
 
 # Currently just some test cases
 def main():
+    mailer = EmailAlert.EmailAlert()
+    eventlogger.log_event("Analyzer","INFO","[STP001] Process started.")
 
-    eventlogger.log_event("Analyzer","INFO","Process started.")
+    mailer.sendEmail("INFO","STP001")
 
     with open(startup, "w") as f:
         f.write(str(time.time()))                                       # Used to keep track of startup/uptime
@@ -51,10 +54,14 @@ def main():
         with open(MinuteCSV,'r', newline = '') as r:
             newest_rows = collections.deque(csv.reader(r),maxlen=1440)
             for i,row in enumerate(newest_rows):
+                #print(f"{i}: {repr(row)} (len={len(row)})")
                 if i > 0:
-                    hourLogger.oneDayCache.append([row[0], row[1], row[2]])
-    except:
-        eventlogger.log_event("Analyzer","INFO","Empty minute cache. Instantiating minute graph with no data.")
+                    #print(row[0],row[1],row[2])
+                    hourLogger.oneDayCache.append([float(row[0]), float(row[1]), float(row[2])])
+
+    except Exception as e:
+        print("Error: ",e)
+        eventlogger.log_event("Analyzer","INFO","[STP002] Empty minute cache. Instantiating minute graph with no data.")
 
     try:
         with open(HourCSV,'r', newline = '') as r:
@@ -63,7 +70,7 @@ def main():
                 if i > 0:
                     dayLogger.oneWeekCache.append([row[0], row[1], row[2]])
     except:
-        eventlogger.log_event("Analyzer","INFO","Empty hour cache. Instantiating hour graph with no data.")
+        eventlogger.log_event("Analyzer","INFO","[STP002] Empty hour cache. Instantiating hour graph with no data.")
 
     try:
         with open(DayCSV,'r', newline = '') as r:
@@ -72,7 +79,7 @@ def main():
                 if i>0:
                     yearLogger.oneYearCache.append([row[0], row[1], row[2]])
     except:
-        eventlogger.log_event("Analyzer","INFO","Empty day cache. Instantiating day graph with no data.")
+        eventlogger.log_event("Analyzer","INFO","[STP002] Empty day cache. Instantiating day graph with no data.")
 
 
     while True:                                                         # Loop keeps the program running forever
@@ -156,6 +163,7 @@ def main():
 
             except Exception as e:
                 eventlogger.log_event("Analyzer","ERROR","RuntimeError encountered. Sleeping for 30 seconds...")
+                mailer.sendEmail("ERROR","ANX003","placeholder")
                 unixtime = time.time()
                 log = DataLogging.errorLogger(unixtime, e)
                 log.errorLogging()

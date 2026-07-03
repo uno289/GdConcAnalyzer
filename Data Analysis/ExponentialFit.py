@@ -10,11 +10,13 @@
 
 import numpy as np
 import scipy
+import eventlogger
+import EmailAlert
 # ============================================
 
 # Code
 # --------------------------------------------
-
+mailer = EmailAlert.EmailAlert()
 # This class tries to do an exponential fit on the data that SignalProcessor has zeroed. If it fails, then an error is
 # printed to show the failure.
 class ExponentialFit:
@@ -64,7 +66,8 @@ class ExponentialFit:
             # print("Error_sqrt: ", self.Error_sqrt)
 
         except RuntimeError:
-            print("Fit failed: skipping curve fit")
+            eventlogger.log_event("Analyzer","WARNING", "Fit failed. Skipping fit this sample...")
+            mailer.sendEmail("WARNING","ANX004","placeholder")
             popt = None
             self.y_model = None
             eq_text = "Fit failed"

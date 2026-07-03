@@ -14,6 +14,8 @@ import shutil
 import time
 import DataLogging
 import eventlogger
+import EmailAlert
+
 
 # --------------------------------------------
 # File declarations
@@ -25,6 +27,8 @@ processedData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Processed"     
 # ============================================
 # Code
 # --------------------------------------------
+mailer = EmailAlert.EmailAlert()
+
 
 # Runs 1x/loop, scans newData for a file, and if it finds one, returns the file location/name
 class scanNewFile:
@@ -83,13 +87,18 @@ class FileReader:
                 self.deltaTime = 4e-9
 
                 try:
-                    if 0 <= int(row[0]) <= 164:
-                        self.Ch1V.append(float(row[1]))
-                    if int(row[0]) == 164:
-                        self.fullList.append(self.Ch1V.copy())
-                        self.Ch1V = []
-                except:
-                    pass
+                    sample = int(row[0])
+                except ValueError:
+                    continue
+                except RuntimeError:
+                    eventlogger.log_event("Analyzer", "ERROR", "Trace length does not match defined length.")
+                    mailer.sendEmail("ERROR","FIM001")
+                if 0 <= sample <= 164:
+                    self.Ch1V.append(float(row[1]))
+                if sample == 164:
+                    self.fullList.append(self.Ch1V.copy())
+                    self.Ch1V = []
+
         return self
 # --------------------------------------------
 
