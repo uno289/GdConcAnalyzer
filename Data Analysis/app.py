@@ -37,7 +37,7 @@ with open(startup, "r") as f:
 with open(runs,"r") as f:
     runcount = f.read()
 
-app = Dash(__name__, external_stylesheets=[dbc.themes.FLATLY],suppress_callback_exceptions=True,title="SK-Gc Concentration Monitor",update_title=None)
+app = Dash(__name__, external_stylesheets=[dbc.icons.BOOTSTRAP,dbc.themes.FLATLY],suppress_callback_exceptions=True,title="SK-Gc Concentration Monitor",update_title=None)
 
 app.index_string = """
 <!DOCTYPE html>
@@ -109,9 +109,37 @@ mailer = EmailAlert.EmailAlert()
 #HTML layout of the app
 app.layout =(
     dbc.Container([
-        dbc.Card(dbc.CardBody(
-            html.H3("Super-Kamiokande Gadolinium Concentration Monitor",
-                    className="text-white display-6 text-center mb-0",style={"lineHeight":"1","fontFamily":"Rajdhani, sans-serif"})),color="primary",inverse=True,className="mb-2 mt-2"),
+        dbc.Card(
+            dbc.Row([
+                dbc.Col(
+                    dbc.CardBody(
+                        html.H3(
+                            "Super-Kamiokande Gadolinium Concentration Monitor",
+                            className="text-white display-6 mb-0",
+                            style={
+                                "lineHeight": "1",
+                                "fontFamily": "Rajdhani, sans-serif"
+                            }
+                        )
+                    ),
+                    width=9
+                ),
+                dbc.Col(
+                    dbc.CardBody(
+                        dbc.Button(
+                        [html.I(className="bi bi-github me-2"), "GitHub"],
+                            href="https://github.com/uno289/GdConcAnalyzer/",
+                            target="_blank",
+                            color="light",
+                            className="float-end"
+                        )
+                    ),
+                    width=3
+                ),
+            ]),
+            color="primary",
+            inverse=True,
+            className="mb-2 mt-2"),
         dbc.Card([
             dbc.Row([
                 dbc.Col(
