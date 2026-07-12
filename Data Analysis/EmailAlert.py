@@ -2,6 +2,7 @@ import smtplib
 import email.message
 import datetime
 import time
+from textwrap import dedent
 
 EMAIL = "gdconcmonitor@gmail.com"
 PASSWORD = "oxdk ctpy vypj dbdq"
@@ -73,19 +74,19 @@ class EmailAlert:
         else:
             body = template.format(var)
 
-        msg.set_content(
-        f"""Super-K Gd Concentration Monitor Alert
+        msg.set_content(dedent(
+        f"""
+Super-K Gd Concentration Monitor Alert
         
-        Alert code: {alert}
-        Alert level: {level}
-        
-        {body}
-        
-        Event occurred at (JST):
-        {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
-        
-        Automated message from GdConc.
-        """)
+Alert code: {alert}
+Alert level: {level}
+
+{body}
+
+Event occurred at (JST): {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+
+Automated message from GdConc.
+"""))
 
 
         with smtplib.SMTP("smtp.gmail.com",587) as s:
