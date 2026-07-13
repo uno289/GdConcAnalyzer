@@ -28,8 +28,8 @@ runs = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\runcount.csv"
 eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventlogger.csv"
 
 # Versioning (For footer)
-VERSION = "1.0"
-UPDATED = "2026-07-03"
+VERSION = "1.1"
+UPDATED = "2026-07-13"
 with open(startup, "r") as f:
     starttime = float(f.read())
     STARTUP = datetime.datetime.fromtimestamp(int(starttime))

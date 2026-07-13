@@ -113,11 +113,11 @@ def main():
                 calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)  # Loading the V_0 * tau value into the calibrator
 
                 concentration = calibrator.linearFunction()               # Returns concentration value AND error
-                error = round(0.1 * concentration[0] + concentration[1],3)         # Systematic error = 10%, adding the uncertainty
+                error = round(0.1 * concentration[0] + concentration[1],5)         # Systematic error = 10%, adding the uncertainty
 
                 # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
                 unixtime = time.time()+32400                                # Shifts time zone to Japan time (TEMP)
-                hourLogger.addSample([unixtime, round(concentration[0],3), error])   # Logs the time, concentration, and error into file
+                hourLogger.addSample([unixtime, round(concentration[0],5), error])   # Logs the time, concentration, and error into file
 
                 fileMover = FileImport.MoveFile(file_path)                  # Loads the file mover (post-processing)
                 fileMover.moveFile()                                        # Moves the processed file out

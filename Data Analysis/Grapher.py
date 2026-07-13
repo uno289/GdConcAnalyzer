@@ -31,7 +31,7 @@ class Grapher:
                 x=self.testrun.time_axis,
                 y=self.Ch1V,
                 mode="lines",
-                hovertemplate="t: %{x:.3e} s<br>V: %{y:.3e} V<extra></extra>"
+                hovertemplate="t: %{x:.3e} s<br>V: %{y:.3e%} V<extra></extra>"
             )
         )
         if self.testrun.y_model is not None:
@@ -94,13 +94,16 @@ class MinutelyGraph:
                 x=df['date'],
                 y=df['y_data'],
                 mode="lines",
-                hovertemplate='Time: %{x}<br>Concentration: %{y} %<extra></extra>'
+                hovertemplate='Time: %{x}<br>Concentration: %{y:.3%}<extra></extra>'
             )
         )
         fig.update_layout(
             title= "Minutely Concentration",
             xaxis_title="Time (JST)",
             yaxis_title="Concentration",
+        )
+        fig.update_yaxes(
+            tickformat=".1%"
         )
         fig.update_xaxes(
             tickformat='%b %d %H:%M:%S'
@@ -135,7 +138,7 @@ class HourlyGraph:
                 y=df['y_data'],
                 error_y=dict(type="data", array=self.error_data, visible=True),
                 mode="lines+markers",
-                hovertemplate='Time: %{x}<br>Concentration: %{y} %<extra></extra>'
+                hovertemplate='Time: %{x}<br>Concentration: %{y:.3%}<extra></extra>'
             )
         )
         fig.update_layout(
@@ -145,6 +148,9 @@ class HourlyGraph:
         )
         fig.update_xaxes(
             tickformat='%b %d, %H:%M'
+        )
+        fig.update_yaxes(
+            tickformat=".1%"
         )
         fig.write_html(
             r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\hourly_graph.html",auto_open=False
@@ -176,12 +182,15 @@ class DailyGraph:
                 y=df['y_data'],
                 error_y=dict(type="data", array=self.error_data, visible=True),
                 mode="lines+markers",
-                hovertemplate='Date: %{x}<br>Concentration: %{y} %<extra></extra>'
+                hovertemplate='Date: %{x}<br>Concentration: %{y:.3%}<extra></extra>'
             )
         )
         fig.update_xaxes(
             title="Time (JST)",
             tickformat='%b %d %Y, %H:%M'
+        )
+        fig.update_yaxes(
+            tickformat=".1%"
         )
         fig.update_layout(
             title= "Daily Concentration",
