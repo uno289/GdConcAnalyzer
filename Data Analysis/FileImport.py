@@ -15,7 +15,7 @@ import time
 import DataLogging
 import eventlogger
 import EmailAlert
-
+import main
 
 # --------------------------------------------
 # File declarations
@@ -51,7 +51,7 @@ class scanNewFile:
         return None
 # --------------------------------------------
 
-# Runs only when a file is in newData. After file is analyzed, tosses the file into processedData.
+# Runs only when a file is in newData. After file is analyzed, deletes the file.
 # Currently OVERWRITES FILES {os.remove(destination)}
 class MoveFile:
     def __init__(self, fileName):
@@ -61,7 +61,10 @@ class MoveFile:
         try:
             if os.path.exists(destination):
                 os.remove(destination)
-            shutil.move(self.fileName, processedData)
+            if main.PROD:
+                os.remove(self.fileName)
+            else:
+                shutil.move(self.fileName, processedData)
         except PermissionError:
             message = "File still in use. Will retry next scan..."
             ErrorLog = DataLogging.errorLogger(time.time(), message)

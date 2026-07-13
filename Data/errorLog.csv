@@ -192,3 +192,8 @@ Timestamp,Error Log
 1782993581.901834,invalid literal for int() with base 10: 'Event n. 78680'
 1782993608.3998709,invalid literal for int() with base 10: 'Event n. 78680'
 1782993638.4088829,invalid literal for int() with base 10: 'Event n. 79280'
+1783911876.3324206,type tuple doesn't define __round__ method
+1783911936.6445668,type tuple doesn't define __round__ method
+1783911966.9549325,type tuple doesn't define __round__ method
+1783912027.3594632,type tuple doesn't define __round__ method
+1783912057.9941566,type tuple doesn't define __round__ method

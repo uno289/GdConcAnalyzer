@@ -81,7 +81,7 @@ x2 = df2["Timestamp"]
 y2 = df2["Concentration"]
 err2 = df2["Error"]
 data2 = [x2,y2,err2]
-dataDeque2 = collections.deque(maxlen=1440)
+dataDeque2 = collections.deque(maxlen=168)
 
 df3 = pd.read_csv(oneDayCSV)
 df3["Timestamp"] = pd.to_numeric(df3["Timestamp"])
@@ -89,7 +89,7 @@ x3 = df3["Timestamp"]
 y3 = df3["Concentration"]
 err3 = df3["Error"]
 data3 = [x3,y3,err3]
-dataDeque3 = collections.deque(maxlen=1440)
+dataDeque3 = collections.deque(maxlen=365)
 
 # Graphing callers, for each of the 3 main graphs
 graphMinutely = Grapher.MinutelyGraph(dataDeque)
@@ -329,7 +329,7 @@ def update_minutely(n):
 def update_hourly(n):
     with open(oneHourCSV,'r') as f:
         reader = csv.reader(f)
-        newest_rows = collections.deque(reader, maxlen=1440)
+        newest_rows = collections.deque(reader, maxlen=168)
     if newest_rows and newest_rows[0][0] == "Timestamp":
         newest_rows.popleft()
     dataDeque2.clear()
@@ -352,7 +352,7 @@ def update_daily(n):
     eventlogger.log_event("Dashboard","INFO","Updating daily graph")
     with open(oneDayCSV,'r') as f:
         reader = csv.reader(f)
-        newest_rows = collections.deque(reader, maxlen=1440)
+        newest_rows = collections.deque(reader, maxlen=365)
     if newest_rows and newest_rows[0][0] == "Timestamp":
         newest_rows.popleft()
     dataDeque3.clear()
