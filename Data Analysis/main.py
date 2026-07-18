@@ -91,14 +91,14 @@ def main():
             try:
                 file = FileImport.load_waveform(file_path)                  # Imports the file
                 listoflists = file.fullList                                 # All 600 runs, each one is 165 samples
-
+                #print("Checkpoint1:", len(listoflists))
                 with open(wavedumpcheck, "w") as f:
                     f.write(str(time.time()))
 
                 avg = SignalProcessor.Averager(listoflists)
                 avg.align()
                 Ch1V = avg.average()
-
+                #print("Checkpoint2:", len(Ch1V))
                 processor = SignalProcessor.SignalProcessor(Ch1V)           # Loads the file into the zeroing function
 
                 Ch1VZeroed = processor.zero_baseline()                      # Zeroes out the baseline voltage
@@ -112,11 +112,14 @@ def main():
 
                 calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)  # Loading the V_0 * tau value into the calibrator
 
-                concentration = calibrator.linearFunction()               # Returns concentration value AND error
+                concentration = calibrator.linearFunction()                        # Returns concentration value AND error
                 error = round(0.1 * concentration[0] + concentration[1],5)         # Systematic error = 10%, adding the uncertainty
+                # print("Concentration: ", round(concentration[0],5), ", Error: ", error)
 
-                # unixtime = file.unixtime                                    # Unix timestamp of when the file was made
                 unixtime = time.time()+32400                                # Shifts time zone to Japan time (TEMP)
+
+                # INSERT SCALING FUNCTION HERE FOR CONCENTRATION
+
                 hourLogger.addSample([unixtime, round(concentration[0],5), error])   # Logs the time, concentration, and error into file
 
                 fileMover = FileImport.MoveFile(file_path)                  # Loads the file mover (post-processing)
@@ -183,7 +186,7 @@ def main():
             f.write(str(runcount+1))
             f.truncate()
 
-        time.sleep(30)                                     # Time in seconds between each pass (set to 1/2 reception time)
+            time.sleep(30)                                     # Time in seconds between each pass (set to 1/2 reception time)
 
 if __name__ == '__main__':                                  # Necessary to run script
     main()

@@ -581,7 +581,7 @@ def update_event_log(_):
         return [],[]
 
 USE_WAITRESS = True
-PROD = False
+PROD = True
 
 if __name__ == "__main__":
     if USE_WAITRESS:

@@ -16,8 +16,7 @@ import ExponentialFit
 # slope to find our concentrations.
 class Calibration:
     def __init__(self, V0_tau, Error_sqrt):
-        self.slope = 0.000113781                        # THIS ONLY WORKS FOR 1233, 1278, 1288!!!
-        # self.slope = 0.00020634                       # THIS ONLY WORKS FOR 1255, 1283, 1293!!!
+        self.slope = 0.293811
         self.V0_tau = V0_tau
         self.Error_sqrt = Error_sqrt
     def linearFunction(self):

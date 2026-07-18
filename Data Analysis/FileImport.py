@@ -74,7 +74,7 @@ class MoveFile:
 # Runs after file is found. Creates a list with Ch1 voltages split by trace for all 600 traces. Also stores time constant for ADC.
 class FileReader:
     def __init__(self, fileName):
-        self.deltaTime = 4e-9
+        self.deltaTime = 1.28e-6
         self.Ch1V = []
         self.fullList = []
 
@@ -86,8 +86,8 @@ class FileReader:
             self.unixtime = os.path.getmtime(self.filepath)         # Currently just is unix time of when the file is input - this seems to be more than enough for the data freq.
 
             for row_num, row in enumerate(reader):                  # Loop that adds traces to lists and appends lists to the main array
-
-                self.deltaTime = 4e-9
+                row = [field.strip() for field in row if field.strip() != ""]
+                self.deltaTime = 1.28e-6
 
                 try:
                     sample = int(row[0])
@@ -96,12 +96,12 @@ class FileReader:
                 except RuntimeError:
                     eventlogger.log_event("Analyzer", "ERROR", "Trace length does not match defined length.")
                     mailer.sendEmail("ERROR","FIM001")
-                if 0 <= sample <= 164:
+                if 0 <= sample <= 7813:
                     self.Ch1V.append(float(row[1]))
-                if sample == 164:
+                if sample == 7813:
                     self.fullList.append(self.Ch1V.copy())
                     self.Ch1V = []
-
+        #print("Ch1V length: ", len(self.fullList))
         return self
 # --------------------------------------------
 

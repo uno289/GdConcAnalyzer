@@ -30,9 +30,10 @@ class Averager:
     def align(self):                                            # Aligner function to shift all peaks to the same spot
         for pulse in self.listoflists:
             pulse = np.array(pulse)
-            target = 88                                         # The peak target - which datapoint should the peak be
+            target = 1240                                       # The peak target - which datapoint should the peak be
             index = np.argmax(abs(pulse))
-            shift = target - index                              # The amount the peak needs to be shifted by
+            shift = target - index                              # The amount the peak needs to be shifted by\
+            #print(index)
             shifted = np.full(len(pulse), np.nan)
             if shift > 0:                                       # Moves the trace to the right
                 shifted[shift:] = pulse[:-shift]
@@ -42,7 +43,18 @@ class Averager:
                 shifted = pulse
             self.shiftedList.append(np.array(shifted))          # Adds the cleaned trace to a list to average later
     def average(self):                                              # Takes the averaged list from above ^ to average
-        self.averagedList = np.nanmean(self.shiftedList, axis=0)    # NOTE: nanmean because the shifts add NaNs
+
+        if np.any(~np.isnan(self.shiftedList)):
+            #print("Shape: ", np.shape(self.shiftedList))
+            #print(self.shiftedList[:10])
+            #print(self.shiftedList[-10:])
+            shifted = np.array(self.shiftedList)
+            all_nan_cols = np.all(np.isnan(shifted), axis=0)
+            #print("Columns that are all NaN:", np.sum(all_nan_cols))
+            #print("First few:", np.where(all_nan_cols)[0][:20])
+            self.averagedList = np.nanmean(self.shiftedList, axis=0)    # NOTE: nanmean because the shifts add NaNs
+        else:
+            self.averagedList = np.nan
         return self.averagedList
 
 # --------------------------------------------
@@ -52,8 +64,8 @@ class Averager:
 class SignalProcessor:
     def __init__(self,signal):
         self.signal = np.array(signal)
-        self.start = np.argmax(abs(self.signal)) + 5                                # This 'start' is 5 points past the peak
+        self.start = np.argmax(abs(self.signal)) + 50                                # This 'start' is 50 points past the peak
 
     def zero_baseline(self):
-        baseline = np.median(self.signal[:np.argmax(abs(self.signal))-3])           # This line finds the baseline
+        baseline = np.median(self.signal[:np.argmax(abs(self.signal))-300])           # This line finds the baseline
         return np.array(self.signal - baseline)                                     # This returns the adjusted code

@@ -26,7 +26,7 @@ class ExponentialFit:
 
         self.peak_index = np.argmax(np.abs(NPArray))            # Where's the peak, self.start goes 5 points past it
         self.t_peak = self.time_axis[self.peak_index]
-        self.start = self.peak_index + 2
+        self.start = self.peak_index + 50
 
         self.x_fit = self.time_axis[self.start:]                # Tells the fit what the x and y parameters are
         self.y_fit = self.NPArray[self.start:]
@@ -48,7 +48,7 @@ class ExponentialFit:
             popt, pcov = scipy.optimize.curve_fit(self.exp_fit, self.x_fit, self.y_fit, p0=p1,bounds=([-np.inf, 0, -np.inf],[np.inf, np.inf, np.inf]), maxfev=10000)
             V_0, tau, V_BG = popt
             self.y_model = self.exp_fit(self.x_fit, *popt)
-            # print("V0 Tau: ", abs(V_0 + V_BG) * tau)
+            print("V0 Tau: ", abs(V_0 + V_BG) * tau)
             self.V0_tau = abs(V_0 + V_BG) * tau
 
             # Error correction below:
