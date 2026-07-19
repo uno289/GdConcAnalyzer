@@ -19,6 +19,7 @@ import Calibration
 import FileImport
 import eventlogger
 import EmailAlert
+import PowerLevelScaler
 import config
 
 # File declarations
@@ -49,6 +50,8 @@ def main():
     MinuteCSV = DataLogging.oneMinuteFile
     HourCSV = DataLogging.HourlyFile
     DayCSV = DataLogging.DailyFile
+
+    pscaler = PowerLevelScaler.PowerLevelScaler()                       # Finds power logger start time
 
     try:
         with open(MinuteCSV,'r', newline = '') as r:
@@ -118,7 +121,8 @@ def main():
 
                 unixtime = time.time()+32400                                # Shifts time zone to Japan time (TEMP)
 
-                # INSERT SCALING FUNCTION HERE FOR CONCENTRATION
+                scaledVals = pscaler.scalePowerLevel(unixtime,concentration[0], error)
+                print(scaledVals)
 
                 hourLogger.addSample([unixtime, round(concentration[0],5), error])   # Logs the time, concentration, and error into file
 
@@ -136,7 +140,7 @@ def main():
                         hourLogger.oneHourData.clear()
 
                 except RuntimeError:
-                    eventlogger.log_event("Analyzer","ERROR","Error encountered when adjusting hourly average!", Exception)
+                    eventlogger.log_event("Analyzer","ERROR","Error encountered when adjusting hourly average!")
                     pass
 
                 try:
@@ -149,7 +153,7 @@ def main():
                         dayLogger.oneDayData.clear()
 
                 except RuntimeError:
-                    eventlogger.log_event("Analyzer", "ERROR", "Error encountered when adjusting daily average!", Exception)
+                    eventlogger.log_event("Analyzer", "ERROR", "Error encountered when adjusting daily average!")
                     pass
 
 

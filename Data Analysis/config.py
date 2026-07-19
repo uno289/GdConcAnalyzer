@@ -10,6 +10,10 @@ import EmailandPass
 # Code
 
 # --------------------------------------------
+# main.py
+
+
+# --------------------------------------------
 # EmailAlert.py
 
 EMAIL = EmailandPass.EMAIL          # Hidden for password protection
@@ -41,6 +45,10 @@ MAX_EVENTS = 15                 # Rolling log amount for the event logger
 # --------------------------------------------
 # SignalProcessor.py
 PEAK_TARGET = 1240              # Tells SignalProcessor roughly where the peak is
+
+# --------------------------------------------
+# PowerLevelScaler.py
+CALIBRATION_VOLTAGE = 0.295     # This value is in mW
 
 # --------------------------------------------
 # app.py
