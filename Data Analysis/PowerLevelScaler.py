@@ -6,6 +6,7 @@
 # settings.
 # ============================================
 # Imports
+import csv
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -71,8 +72,12 @@ class PowerLevelScaler:
             self.scaleFactor = abs(config.CALIBRATION_VOLTAGE/self.powerLevel[0])
             scaledConc = unscaledConc * self.scaleFactor
             scaledErr = error * self.scaleFactor
+
+            with open(config.lastPowerLog, 'w') as f:
+                writer = csv.writer(f)
+                writer.writerow([self.powerLevel[1],self.powerLevel[0],self.scaleFactor])
+
         except Exception as e:
-            print(e)
-            raise ValueError('Unable to scale power level.')
+            raise ValueError('Unable to scale power level:',e)
 
         return self.powerLevel,self.scaleFactor,scaledConc, scaledErr

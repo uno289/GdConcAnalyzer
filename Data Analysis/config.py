@@ -18,6 +18,7 @@ ANALYZER_MODE = "Analysis"          # Choose between "Analysis" or "Calibration"
 
 EMAIL = EmailandPass.EMAIL          # Hidden for password protection
 PASSWORD = EmailandPass.PASSWORD    # Hidden for password protection
+EMAIL_ALERTTIMEOUT = 3600           # 1hr lock on repeat error emails
 EMAIL_LIST = [
     "katrumpeter@gmail.com",
     "kanand289@gmail.com"
@@ -35,8 +36,8 @@ ADC_SAMPLECOUNT = 7814          # How many samples per trace
 CALIBRATION_FACTOR = 0.293811   # Adjusts slope of calibration
 
 # --------------------------------------------
-# EmailAlert.py
-EMAIL_ALERTTIMEOUT = 3600       # 1hr
+# Grapher.py
+TRACE_COUNT = 200               # Replace with current trace count per minute
 
 # --------------------------------------------
 # eventlogger.py
@@ -70,6 +71,7 @@ wavedumpcheck = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\wavedumpHB.csv"
 eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventlogger.csv"                    # Rolling event log
 powerLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Power Meter\Log1.txt"               # Power meter log
 errorLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\errorLog.csv"                       # Permanent error log
+lastPowerLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\lastPowerLog.csv"               # Last power reading log
 
 # --------------------------------------------
 # Data

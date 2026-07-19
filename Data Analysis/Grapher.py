@@ -7,8 +7,9 @@
 
 import plotly as pl
 import pandas as pd
+import config
 
-current_trace = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\current_trace.html"
+current_trace = config.singleTrace
 # ============================================
 
 # Code
@@ -48,7 +49,7 @@ class Grapher:
             )
 
         fig.update_layout(
-            title= "600 Traces Averaged",
+            title= f"{config.TRACE_COUNT} Traces Averaged",
             xaxis_title="Time",
             yaxis_title="Calibrated Voltage (mV)",
             font=dict(family="Rajdhani,sans-serif")

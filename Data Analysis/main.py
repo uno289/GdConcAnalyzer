@@ -26,7 +26,7 @@ import config
 # Code
 # Runs the program. Calls on everything else
 def main():
-    if config.ANALYZER_MODE == "Analysis":
+    if config.ANALYZER_MODE == "Analysis":          # IMPORTANT!! This is Analysis mode, and will update graphs.
         mailer = EmailAlert.EmailAlert()
         eventlogger.log_event("Analyzer","INFO","[STP001] Process started.")    # Logs to webpage
 
