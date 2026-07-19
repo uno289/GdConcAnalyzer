@@ -12,8 +12,10 @@ from zoneinfo import ZoneInfo
 import config
 
 # ============================================
-# Code
 
+# Code
+# --------------------------------------------
+# This piece runs when the main() script starts, and just grabs the start time for the power meter.
 def getStartTime():
     with open(config.powerLog, 'r') as f:
         for row in f:
@@ -25,6 +27,9 @@ def getStartTime():
                 return dt.timestamp()
     raise ValueError('No start time found.')
 
+# --------------------------------------------
+# The power meter only keeps local time data, so we have to grab the local time and the start time, and use those
+# to find the unix time. Then we can use unix time to find the most recent prior power average for the scaling.
 def getLatestPowerLevel(targetTime, startTime):
     latestPower = None
     latestTime = None
@@ -51,6 +56,9 @@ def getLatestPowerLevel(targetTime, startTime):
 
     return latestPower, latestTime                  # Tuple that gets fed into PowerLevelScaler
 
+# --------------------------------------------
+# This takes the start time, and is given the timestamp of the concentration, the concentration itself, and the error.
+# It gathers the most recent power level and scales the concentration and error, returning them out.
 class PowerLevelScaler:
     def __init__(self):
         self.startTime = getStartTime()

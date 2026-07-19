@@ -60,25 +60,25 @@ WEBPROD = True                  # Tells the website to use dedicated app
 
 # --------------------------------------------
 # Heartbeats/Startup Stats
-startup = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\startup.csv"
-runs = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\runcount.csv"
-heartbeat = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Heartbeat.csv"
-wavedumpcheck = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\wavedumpHB.csv"
+startup = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\startup.csv"                         # Startup time
+runs = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\runcount.csv"                           # Runs since startup
+heartbeat = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Heartbeat.csv"                     # main.py heartbeat
+wavedumpcheck = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\wavedumpHB.csv"                # WaveDump file heartbeat
 
 # --------------------------------------------
 # Logs
-eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventlogger.csv"
-powerLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Power Meter\Log1.txt"
-errorLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\errorLog.csv"
+eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventlogger.csv"                    # Rolling event log
+powerLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Power Meter\Log1.txt"               # Power meter log
+errorLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\errorLog.csv"                       # Permanent error log
 
 # --------------------------------------------
 # Data
-singleTrace = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\current_trace.html"
-oneMinuteCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\oneMinuteData.csv"
-oneHourCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\hourlyData.csv"
-oneDayCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\dailyData.csv"
+singleTrace = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\current_trace.html"      # HTML of one averaged trace
+oneMinuteCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\oneMinuteData.csv"              # Minutely data, forever
+oneHourCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\hourlyData.csv"                   # Hourly data, forever
+oneDayCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\dailyData.csv"                     # Daily data, forever
 
 # --------------------------------------------
 # Data folders
-newData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\New"                                  # Input data
-processedData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Processed"                      # Dump folder after analysis
+newData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\New"                                 # Input data
+processedData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Processed"                     # Dump folder after analysis
