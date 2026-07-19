@@ -119,12 +119,11 @@ def main():
                 error = round(0.1 * concentration[0] + concentration[1],5)         # Systematic error = 10%, adding the uncertainty
                 # print("Concentration: ", round(concentration[0],5), ", Error: ", error)
 
-                unixtime = time.time()+32400                                # Shifts time zone to Japan time (TEMP)
+                unixtime = time.time()+32400                                       # Shifts time zone to Japan time (TEMP)
 
-                scaledVals = pscaler.scalePowerLevel(unixtime,concentration[0], error)
-                print(scaledVals)
+                scaledVals = pscaler.scalePowerLevel(unixtime,concentration[0], error)            # Handles scaling to match the calibrated power levels
 
-                hourLogger.addSample([unixtime, round(concentration[0],5), error])   # Logs the time, concentration, and error into file
+                hourLogger.addSample([unixtime, round(scaledVals[2],5),round(scaledVals[3],5)])   # Logs the time, concentration, and error into file
 
                 fileMover = FileImport.MoveFile(file_path)                  # Loads the file mover (post-processing)
                 fileMover.moveFile()                                        # Moves the processed file out

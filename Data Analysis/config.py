@@ -48,7 +48,7 @@ PEAK_TARGET = 1240              # Tells SignalProcessor roughly where the peak i
 
 # --------------------------------------------
 # PowerLevelScaler.py
-CALIBRATION_VOLTAGE = 0.295     # This value is in mW
+CALIBRATION_VOLTAGE = 0.295     # This value is in mW, whatever calibration voltage was used
 
 # --------------------------------------------
 # app.py
