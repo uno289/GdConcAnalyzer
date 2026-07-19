@@ -26,8 +26,8 @@ processedData = pathlib.Path(r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Pr
 
 # ============================================
 # Versioning (For footer)
-VERSION = "1.1"
-UPDATED = "2026-07-13"
+VERSION = "1.2"
+UPDATED = "2026-07-19"
 # --------------------------------------------
 # Startup Code
 
