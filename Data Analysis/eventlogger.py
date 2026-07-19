@@ -11,8 +11,7 @@ import time
 from filelock import FileLock
 import config
 
-eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventlogger.csv"
-LOCK_FILE = eventlog + ".lock"
+LOCK_FILE = config.eventlog + ".lock"
 lock = FileLock(LOCK_FILE)
 
 # ============================================
@@ -24,8 +23,8 @@ def log_event(source,level,message):
     with lock:
         rows = []
 
-        if os.path.exists(eventlog):
-            with open(eventlog,"r",newline="",encoding="utf-8") as f:
+        if os.path.exists(config.eventlog):
+            with open(config.eventlog,"r",newline="",encoding="utf-8") as f:
                 reader = csv.reader(f)
                 rows = list(reader)
 
@@ -37,7 +36,7 @@ def log_event(source,level,message):
         if len(rows) > config.MAX_EVENTS + 1:
             rows = [rows[0]] + rows[-config.MAX_EVENTS:]
 
-        with open(eventlog,"w",newline="",encoding="utf-8") as f:
+        with open(config.eventlog,"w",newline="",encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerows(rows)
 

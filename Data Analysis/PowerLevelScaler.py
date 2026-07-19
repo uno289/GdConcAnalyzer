@@ -11,13 +11,11 @@ from zoneinfo import ZoneInfo
 
 import config
 
-# File declarations
-powerLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Power Meter\Log1.txt"
 # ============================================
 # Code
 
 def getStartTime():
-    with open(powerLog, 'r') as f:
+    with open(config.powerLog, 'r') as f:
         for row in f:
             if ';Logged' in row:
                 line = row
@@ -31,7 +29,7 @@ def getLatestPowerLevel(targetTime, startTime):
     latestPower = None
     latestTime = None
 
-    with open(powerLog, 'r') as f:
+    with open(config.powerLog, 'r') as f:
         for row in f:
             try:
                 relativeTime, powerLevel = row.strip().split()

@@ -7,11 +7,11 @@
 
 import EmailandPass
 
+# ============================================
 # Code
 
-# --------------------------------------------
 # main.py
-
+ANALYZER_MODE = "Analysis"          # Choose between "Analysis" or "Calibration" to swap modes
 
 # --------------------------------------------
 # EmailAlert.py
@@ -54,3 +54,31 @@ CALIBRATION_VOLTAGE = 0.295     # This value is in mW, whatever calibration volt
 # app.py
 USE_WAITRESS = True             # Toggles the website production environment
 WEBPROD = True                  # Tells the website to use dedicated app
+
+# ============================================
+# File declarations
+
+# --------------------------------------------
+# Heartbeats/Startup Stats
+startup = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\startup.csv"
+runs = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\runcount.csv"
+heartbeat = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Heartbeat.csv"
+wavedumpcheck = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\wavedumpHB.csv"
+
+# --------------------------------------------
+# Logs
+eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventlogger.csv"
+powerLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Power Meter\Log1.txt"
+errorLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\errorLog.csv"
+
+# --------------------------------------------
+# Data
+singleTrace = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\current_trace.html"
+oneMinuteCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\oneMinuteData.csv"
+oneHourCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\hourlyData.csv"
+oneDayCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\dailyData.csv"
+
+# --------------------------------------------
+# Data folders
+newData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\New"                                  # Input data
+processedData = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Processed"                      # Dump folder after analysis

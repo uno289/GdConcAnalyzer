@@ -24,17 +24,6 @@ import config
 # File declarations
 processedData = pathlib.Path(r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Processed")
 
-singleTrace = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\current_trace.html"
-oneMinuteCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\oneMinuteData.csv"
-oneHourCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\hourlyData.csv"
-oneDayCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\dailyData.csv"
-
-heartbeat = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Heartbeat.csv"
-startup = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\startup.csv"
-errorLog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\errorLog.csv"
-runs = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\runcount.csv"
-
-eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventlogger.csv"
 # ============================================
 # Versioning (For footer)
 VERSION = "1.1"
@@ -42,11 +31,11 @@ UPDATED = "2026-07-13"
 # --------------------------------------------
 # Startup Code
 
-with open(startup, "r") as f:
+with open(config.startup, "r") as f:
     starttime = float(f.read())
     STARTUP = datetime.datetime.fromtimestamp(int(starttime))
     UPTIME = datetime.timedelta(seconds=(int(time.time()-(starttime))))
-with open(runs,"r") as f:
+with open(config.runs,"r") as f:
     runcount = f.read()
 
 app = Dash(__name__, external_stylesheets=[dbc.icons.BOOTSTRAP,dbc.themes.FLATLY],suppress_callback_exceptions=True,title="SK-Gc Concentration Monitor",update_title=None)
@@ -75,12 +64,12 @@ app.index_string = """
 @app.server.route("/trace")
 def serve_trace():
     return send_file(
-        singleTrace
+        config.singleTrace
     )
 
 # --------------------------------------------
 # Data frames for each graph. df1 = minutely, df2 = hourly, df3 = daily
-df1 = pd.read_csv(oneMinuteCSV)
+df1 = pd.read_csv(config.oneMinuteCSV)
 df1["Timestamp"] = pd.to_numeric(df1["Timestamp"])
 x1 = df1["Timestamp"]
 y1 = df1["Concentration"]
@@ -88,7 +77,7 @@ err1 = df1["Error"]
 data1 = [x1,y1,err1]
 dataDeque = collections.deque(maxlen=1440)
 
-df2 = pd.read_csv(oneHourCSV)
+df2 = pd.read_csv(config.oneHourCSV)
 df2["Timestamp"] = pd.to_numeric(df2["Timestamp"])
 x2 = df2["Timestamp"]
 y2 = df2["Concentration"]
@@ -96,7 +85,7 @@ err2 = df2["Error"]
 data2 = [x2,y2,err2]
 dataDeque2 = collections.deque(maxlen=168)
 
-df3 = pd.read_csv(oneDayCSV)
+df3 = pd.read_csv(config.oneDayCSV)
 df3["Timestamp"] = pd.to_numeric(df3["Timestamp"])
 x3 = df3["Timestamp"]
 y3 = df3["Concentration"]
@@ -323,7 +312,7 @@ app.layout =(
 )
 
 def update_minutely(n):
-    with open(oneMinuteCSV,'r') as f:
+    with open(config.oneMinuteCSV,'r') as f:
         reader = csv.reader(f)
         newest_rows = collections.deque(reader,maxlen=1440)
     if newest_rows and newest_rows[0][0] == "Timestamp":
@@ -345,7 +334,7 @@ def update_minutely(n):
 )
 
 def update_hourly(n):
-    with open(oneHourCSV,'r') as f:
+    with open(config.oneHourCSV,'r') as f:
         reader = csv.reader(f)
         newest_rows = collections.deque(reader, maxlen=168)
     if newest_rows and newest_rows[0][0] == "Timestamp":
@@ -368,7 +357,7 @@ def update_hourly(n):
 
 def update_daily(n):
     eventlogger.log_event("Dashboard","INFO","Updating daily graph")
-    with open(oneDayCSV,'r') as f:
+    with open(config.oneDayCSV,'r') as f:
         reader = csv.reader(f)
         newest_rows = collections.deque(reader, maxlen=365)
     if newest_rows and newest_rows[0][0] == "Timestamp":
@@ -403,11 +392,11 @@ def update_single_trace(n):
 def download(minute,hour,day):
     match ctx.triggered_id:
         case "download-minute-button":
-            return dcc.send_file(oneMinuteCSV), None, None
+            return dcc.send_file(config.oneMinuteCSV), None, None
         case "download-hour-button":
-            return None, dcc.send_file(oneHourCSV), None
+            return None, dcc.send_file(config.oneHourCSV), None
         case "download-day-button":
-            return None, None, dcc.send_file(oneDayCSV)
+            return None, None, dcc.send_file(config.oneDayCSV)
 
 # Error Log
 @app.callback(
@@ -421,7 +410,7 @@ Output("errorLogTable","data"),
     State("error-count","data")
 )
 def update_error_log(_,previous_count):
-    df=pd.read_csv(errorLog)
+    df=pd.read_csv(config.errorLog)
 
     current_count = len(df)
     latest = df.iloc[-1]
@@ -447,7 +436,7 @@ def update_error_log(_,previous_count):
 def update_main_status(_):
 
     try:
-        with open(heartbeat,"r") as f:
+        with open(config.heartbeat,"r") as f:
             last=float(f.read())
             current=time.time()
             age = current-last
@@ -481,8 +470,7 @@ def get_wavedump_latest_filetime():
 )
 def update_wavedump(_):
     latest = get_wavedump_latest_filetime()
-    wavedumpcheck = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\wavedumpHB.csv"
-    with open(wavedumpcheck,"r") as f:
+    with open(config.wavedumpcheck,"r") as f:
         if latest is None:
             return ("No data","No file found","secondary")
         age = time.time() - latest
@@ -509,7 +497,7 @@ def update_wavedump(_):
             return ("Active",f"Last file: {int(age)}s ago","success")
 
 def check_analysis_quality():
-    df = pd.read_csv(oneMinuteCSV)
+    df = pd.read_csv(config.oneMinuteCSV)
 
     if len(df) < 2:
         return ("Waiting","Not enough data","secondary")
@@ -546,7 +534,7 @@ def update_analysis_status(_):
     return check_analysis_quality()
 
 def check_latest_concentration():
-    df = pd.read_csv(oneMinuteCSV)
+    df = pd.read_csv(config.oneMinuteCSV)
     latest_conc = df.iloc[-1]["Concentration"]
     latest_err = df.iloc[-1]["Error"]
     if len(df) > 0:
@@ -575,12 +563,12 @@ def update_concentration(_):
     Input("uptime-refresh","n_intervals")
 )
 def update_status(_):
-    with open(startup, "r") as f:
+    with open(config.startup, "r") as f:
         starttime = float(f.read())
         STARTUP = datetime.datetime.fromtimestamp(int(starttime))
         UPTIME = datetime.timedelta(seconds=(int(time.time() - (starttime))))
 
-    with open(runs, "r") as f:
+    with open(config.runs, "r") as f:
         runcount = f.read()
 
     return (
@@ -598,7 +586,7 @@ def update_status(_):
 
 def update_event_log(_):
     try:
-        df = pd.read_csv(eventlog)
+        df = pd.read_csv(config.eventlog)
         df = df.iloc[::-1].reset_index(drop=True)
 
         return(df.to_dict("records"),[{"name": c, "id": c} for c in df.columns])
