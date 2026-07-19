@@ -22,9 +22,9 @@ def getStartTime():
         for row in f:
             if ';Logged' in row:
                 line = row
-                line = line.replace(';Logged:', '').strip()
-                dt = datetime.strptime(line, '%d/%m/%Y at %H:%M:%S')
-                dt = dt.replace(tzinfo=ZoneInfo('Asia/Tokyo'))
+                line = line.replace(';Logged:', '').strip()             # Removes the excess stuff from the start time
+                dt = datetime.strptime(line, '%d/%m/%Y at %H:%M:%S')       #  Converts to time
+                dt = dt.replace(tzinfo=ZoneInfo('Asia/Tokyo'))                   # Converts to Unix time in Tokyo
                 return dt.timestamp()
     raise ValueError('No start time found.')
 
@@ -42,10 +42,10 @@ def getLatestPowerLevel(targetTime, startTime):
                 relativeTime = float(relativeTime)
                 powerLevel = float(powerLevel)
 
-                globalTime = relativeTime + startTime
+                globalTime = relativeTime + startTime                   # Takes the relative time of the points and switches to unix
 
-                if globalTime <= targetTime:
-                    if latestTime is None or globalTime > latestTime:
+                if globalTime <= targetTime:                            # Only points from before the analysis time
+                    if latestTime is None or globalTime > latestTime:   # Grabs the most recent point from before analysis
                         latestTime = globalTime
                         latestPower = powerLevel
 
@@ -59,7 +59,8 @@ def getLatestPowerLevel(targetTime, startTime):
 
 # --------------------------------------------
 # This takes the start time, and is given the timestamp of the concentration, the concentration itself, and the error.
-# It gathers the most recent power level and scales the concentration and error, returning them out.
+# It gathers the most recent power level and scales the concentration and error, returning them out and writing to
+# a log for website display.
 class PowerLevelScaler:
     def __init__(self):
         self.startTime = getStartTime()
@@ -70,10 +71,10 @@ class PowerLevelScaler:
             raise ValueError('No power level found.')
         try:
             self.scaleFactor = abs(config.CALIBRATION_VOLTAGE/self.powerLevel[0])
-            scaledConc = unscaledConc * self.scaleFactor
-            scaledErr = error * self.scaleFactor
+            scaledConc = unscaledConc * self.scaleFactor            # The scaled concentration
+            scaledErr = error * self.scaleFactor                    # The scaled error
 
-            with open(config.lastPowerLog, 'w') as f:
+            with open(config.lastPowerLog, 'w') as f:               # This piece goes to the log, [timestamp, power level, scale factor]
                 writer = csv.writer(f)
                 writer.writerow([self.powerLevel[1],self.powerLevel[0],self.scaleFactor])
 
