@@ -4,12 +4,14 @@
 #   peaks, average 600 traces into one clean
 #   trace
 # ============================================
+from logging import config
 
 # Imports
 
 import FileImport
 import numpy as np
 import scipy as sp
+import config
 
 # ============================================
 
@@ -30,7 +32,7 @@ class Averager:
     def align(self):                                            # Aligner function to shift all peaks to the same spot
         for pulse in self.listoflists:
             pulse = np.array(pulse)
-            target = 1240                                       # The peak target - which datapoint should the peak be
+            target = config.PEAK_TARGET                         # The peak target - which datapoint should the peak be
             index = np.argmax(abs(pulse))
             shift = target - index                              # The amount the peak needs to be shifted by\
             #print(index)

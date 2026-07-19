@@ -5,7 +5,7 @@
 #   find concentration.
 # ============================================
 # Imports and File Definitions
-import ExponentialFit
+import config
 # --------------------------------------------
 
 # Code
@@ -16,7 +16,7 @@ import ExponentialFit
 # slope to find our concentrations.
 class Calibration:
     def __init__(self, V0_tau, Error_sqrt):
-        self.slope = 0.293811
+        self.slope = config.CALIBRATION_FACTOR
         self.V0_tau = V0_tau
         self.Error_sqrt = Error_sqrt
     def linearFunction(self):

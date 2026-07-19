@@ -15,8 +15,7 @@ import time
 import DataLogging
 import eventlogger
 import EmailAlert
-import main
-
+import config
 # --------------------------------------------
 # File declarations
 
@@ -36,11 +35,10 @@ class scanNewFile:
         pass
     def scanFile(self):
         files = os.listdir(newData)
-        fileSizeb = 4450000
         for file in files:
             if file.endswith(".txt"):
                 filepath = os.path.join(newData, file)
-                if os.path.getsize(filepath)>fileSizeb:
+                if os.path.getsize(filepath)>config.ADC_FILE_SIZE:
                     filesize1 = os.path.getsize(filepath)
                     #time.sleep(2)
                     filesize2 = os.path.getsize(filepath)
@@ -61,7 +59,7 @@ class MoveFile:
         try:
             if os.path.exists(destination):
                 os.remove(destination)
-            if main.PROD:
+            if config.FILE_DELETION:
                 os.remove(self.fileName)
             else:
                 shutil.move(self.fileName, processedData)
@@ -74,7 +72,7 @@ class MoveFile:
 # Runs after file is found. Creates a list with Ch1 voltages split by trace for all 600 traces. Also stores time constant for ADC.
 class FileReader:
     def __init__(self, fileName):
-        self.deltaTime = 1.28e-6
+        self.deltaTime = config.ADC_DELTATIME
         self.Ch1V = []
         self.fullList = []
 
@@ -87,7 +85,7 @@ class FileReader:
 
             for row_num, row in enumerate(reader):                  # Loop that adds traces to lists and appends lists to the main array
                 row = [field.strip() for field in row if field.strip() != ""]
-                self.deltaTime = 1.28e-6
+                self.deltaTime = config.ADC_DELTATIME
 
                 try:
                     sample = int(row[0])
@@ -96,9 +94,9 @@ class FileReader:
                 except RuntimeError:
                     eventlogger.log_event("Analyzer", "ERROR", "Trace length does not match defined length.")
                     mailer.sendEmail("ERROR","FIM001")
-                if 0 <= sample <= 7813:
+                if 0 <= sample <= config.ADC_SAMPLECOUNT-1:
                     self.Ch1V.append(float(row[1]))
-                if sample == 7813:
+                if sample == config.ADC_SAMPLECOUNT-1:
                     self.fullList.append(self.Ch1V.copy())
                     self.Ch1V = []
         #print("Ch1V length: ", len(self.fullList))

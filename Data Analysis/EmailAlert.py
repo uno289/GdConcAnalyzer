@@ -56,13 +56,10 @@ ALERTS = {
         "body": "Critical error. Last file was {}s ago, check WaveDump and FileImport."},
 }
 
-RECIPIENTS = [
-    "katrumpeter@gmail.com",
-    "kanand289@gmail.com"
-]
+RECIPIENTS = config.EMAIL_LIST
 
 ACTIVE_ALERTS = {}
-ALERT_TIMEOUT = 3600 # 1hr
+ALERT_TIMEOUT = config.EMAIL_ALERTTIMEOUT
 
 # ============================================
 # Code

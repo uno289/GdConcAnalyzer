@@ -19,7 +19,7 @@ import eventlogger
 import Grapher
 import EmailAlert
 from flask import send_file
-import main
+import config
 
 # File declarations
 processedData = pathlib.Path(r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Processed")
@@ -609,8 +609,8 @@ def update_event_log(_):
 
 # Website startup
 if __name__ == "__main__":
-    if main.USE_WAITRESS:
-        if main.WEBPROD:
+    if config.USE_WAITRESS:
+        if config.WEBPROD:
             from waitress import serve
             serve(app.server, host="10.4.7.158", port=8050, threads=16)
         else:

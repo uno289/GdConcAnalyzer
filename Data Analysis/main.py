@@ -19,6 +19,7 @@ import Calibration
 import FileImport
 import eventlogger
 import EmailAlert
+import config
 
 # File declarations
 heartbeat = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Heartbeat.csv"
@@ -27,12 +28,6 @@ eventlog = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\eventLog.csv"
 startup = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\startup.csv"
 runs = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\runcount.csv"
 # ============================================
-# Toggles/Settings
-PROD = False            # PROD tag toggles file deletion
-USE_WAITRESS = True     # Toggles the website production environment
-WEBPROD = True          # Tells the website to use dedicated app
-max_events = 15         # Rolling log amount for the event logger
-# --------------------------------------------
 # Code
 # Runs the program. Calls on everything else
 def main():
