@@ -596,13 +596,16 @@ def update_event_log(_):
         return [],[]
 
 # Website startup
-if __name__ == "__main__":
+def run_app():
     if config.USE_WAITRESS:
+        from waitress import serve
         if config.WEBPROD:
-            from waitress import serve
             serve(app.server, host="10.4.7.158", port=8050, threads=16)
         else:
-            from waitress import serve
-            serve(app.server, host = "0.0.0.0", port = 8050, threads=16)
+            serve(app.server, host="0.0.0.0", port=8050, threads=16)
     else:
-        app.run(host="0.0.0.0",port=8050,debug=False,threaded=True)
+        app.run(host="0.0.0.0", port=8050, debug=False, threaded=True)
+
+
+if __name__ == "__main__":
+    run_app()

@@ -11,7 +11,7 @@ import EmailandPass
 # Code
 
 # main.py
-ANALYZER_MODE = "Analysis"          # Choose between "Analysis" or "Calibration" to swap modes
+ANALYZER_MODE = "Analysis"       # Choose between "Analysis" or "Calibration" to swap modes
 
 # --------------------------------------------
 # EmailAlert.py
@@ -79,6 +79,8 @@ singleTrace = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\current_t
 oneMinuteCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\oneMinuteData.csv"              # Minutely data, forever
 oneHourCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\hourlyData.csv"                   # Hourly data, forever
 oneDayCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\dailyData.csv"                     # Daily data, forever
+
+calibrationCSV = r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\calbrationCSV.csv"            # Only used in calibration, data compiler
 
 # --------------------------------------------
 # Data folders
