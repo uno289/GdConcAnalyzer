@@ -236,16 +236,16 @@ def calibration_loop():
 
                 scaledVals = pscaler.scalePowerLevel(unixtime, concentration[0],error)  # Handles scaling to match the calibrated power levels
 
-                with open(config.calibrationCSV,"a", newline='') as f:
+                with open(config.calibrationCSV,"a", newline='') as f:  # Calibration log
                     writer = csv.writer(f)
                     writer.writerow([
-                        unixtime,
-                        testrun.V_0,
-                        testrun.tau,
-                        testrun.V0_tau,
-                        testrun.Error_sqrt,
-                        scaledVals[0][0],
-                        scaledVals[0][1]
+                        unixtime,                                       # Timestamp
+                        testrun.V_0,                                    # Estimated peak voltage
+                        testrun.tau,                                    # Estimated time constant
+                        testrun.V0_tau,                                 # Estimated area under the trace
+                        testrun.Error_sqrt,                             # Error between estimate and actual points
+                        scaledVals[0][0],                               # Power level
+                        scaledVals[0][1]                                # Power timestamp
                     ])
 
                 fileMover = FileImport.MoveFile(file_path)  # Loads the file mover (post-processing)
