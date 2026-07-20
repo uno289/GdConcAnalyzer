@@ -10,7 +10,7 @@
 
 import numpy as np
 import scipy
-import eventlogger
+import EventLogger
 import EmailAlert
 # ============================================
 
@@ -66,7 +66,7 @@ class ExponentialFit:
             # print("Error_sqrt: ", self.Error_sqrt)
 
         except RuntimeError:
-            eventlogger.log_event("Analyzer","WARNING", "Fit failed. Skipping fit this sample...")
+            EventLogger.log_event("Analyzer", "WARNING", "Fit failed. Skipping fit this sample...")
             mailer.sendEmail("WARNING","ANX004","placeholder")
             popt = None
             self.y_model = None

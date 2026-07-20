@@ -40,7 +40,7 @@ CALIBRATION_FACTOR = 0.293811   # Adjusts slope of calibration
 TRACE_COUNT = 200               # Replace with current trace count per minute
 
 # --------------------------------------------
-# eventlogger.py
+# EventLogger.py
 MAX_EVENTS = 15                 # Rolling log amount for the event logger
 
 # --------------------------------------------
@@ -54,7 +54,7 @@ CALIBRATION_VOLTAGE = 0.295     # This value is in mW, whatever calibration volt
 # --------------------------------------------
 # app.py
 USE_WAITRESS = True             # Toggles the website production environment
-WEBPROD = True                  # Tells the website to use dedicated app
+WEBPROD = True                  # Tells the website to use dedicated ip
 
 # ============================================
 # File declarations

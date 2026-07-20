@@ -15,7 +15,7 @@ from dash import Dash, dcc, html, Input, Output, ctx, dash_table, State
 import pandas as pd
 import collections
 
-import eventlogger
+import EventLogger
 import Grapher
 import EmailAlert
 from flask import send_file
@@ -356,7 +356,7 @@ def update_hourly(n):
 )
 
 def update_daily(n):
-    eventlogger.log_event("Dashboard","INFO","Updating daily graph")
+    EventLogger.log_event("Dashboard", "INFO", "Updating daily graph")
     with open(config.oneDayCSV,'r') as f:
         reader = csv.reader(f)
         newest_rows = collections.deque(reader, maxlen=365)
@@ -444,10 +444,10 @@ def update_main_status(_):
             if age < 120:
                 return ("Running",f"Last heartbeat: {int(age)}s ago","success")
             elif 120 < age < 300:
-                eventlogger.log_event("Analyzer","WARNING",f"Analyzer idle. Last data: {int(age)}s ago")
+                EventLogger.log_event("Analyzer", "WARNING", f"Analyzer idle. Last data: {int(age)}s ago")
                 return ("Idle", f"Last data: {int(age)}s ago","warning")
             else:
-                eventlogger.log_event("Analyzer","ERROR","No heartbeat detected. Check analysis script.")
+                EventLogger.log_event("Analyzer", "ERROR", "No heartbeat detected. Check analysis script.")
                 mailer.sendEmail("ERROR", "HBX001")
                 return ("Unknown","No heartbeat detected","danger")
     except Exception as e:
@@ -476,22 +476,22 @@ def update_wavedump(_):
         age = time.time() - latest
         importerheartbeat = time.time() - float(f.read())
         if importerheartbeat > 300 and age > 300:
-            eventlogger.log_event("Analyzer","ERROR",f"Critical error. Wavedump AND Analyzer down, last file {int(age)}s ago")
+            EventLogger.log_event("Analyzer", "ERROR", f"Critical error. Wavedump AND Analyzer down, last file {int(age)}s ago")
             mailer.sendEmail("ERROR","WDP002",int(age))
             return ("Critical error", f"Last file: {int(age)}s ago, check WaveDump AND Analyzer", "danger")
         elif age > 120:
-            eventlogger.log_event("Analyzer","ERROR",f"Analyzer stopped. Last file: {int(age)}s ago, check FileImport.")
+            EventLogger.log_event("Analyzer", "ERROR", f"Analyzer stopped. Last file: {int(age)}s ago, check FileImport.")
             mailer.sendEmail("ERROR","FIM002",int(age))
             return("Stopped",f"Last file: {int(age)}s ago, check Analyzer","danger")
         elif importerheartbeat > 120:
-            eventlogger.log_event("Analyzer","ERROR",f"Analyzer stopped. Last file: {int(age)}s ago, check WaveDump.")
+            EventLogger.log_event("Analyzer", "ERROR", f"Analyzer stopped. Last file: {int(age)}s ago, check WaveDump.")
             mailer.sendEmail("ERROR","WDP001",int(age))
             return("Stopped",f"Last file: {int(age)}s ago, check WaveDump","danger")
         elif 120 < age < 300:
-            eventlogger.log_event("Analyzer","WARNING",f"Analyzer delayed. Last file: {int(age)}s ago, check FileImport.")
+            EventLogger.log_event("Analyzer", "WARNING", f"Analyzer delayed. Last file: {int(age)}s ago, check FileImport.")
             return ("Delayed",f"Last file: {int(age)}s ago, check Analyzer","warning")
         elif 120 < importerheartbeat < 300:
-            eventlogger.log_event("Analyzer","WARNING", f"Analyzer delayed. Last file:{int(age)}s ago, check WaveDump.")
+            EventLogger.log_event("Analyzer", "WARNING", f"Analyzer delayed. Last file:{int(age)}s ago, check WaveDump.")
             return ("Delayed", f"Last file: {int(age)}s ago, check WaveDump", "warning")
         if age < 120 and importerheartbeat <120:
             return ("Active",f"Last file: {int(age)}s ago","success")
@@ -508,18 +508,18 @@ def check_analysis_quality():
     change = (latest-previous)/previous
 
     if change < 0.1:
-        eventlogger.log_event("Analyzer","INFO",f"Nominal operation. Concentration changed by {round(change,3)}%")
+        EventLogger.log_event("Analyzer", "INFO", f"Nominal operation. Concentration changed by {round(change, 3)}%")
         return ("Nominal", f"Concentration changed by {round(change,3)}%","success")
     if change > 0.1:
-        eventlogger.log_event("Potential Analysis Error","WARNING",f"Check analysis. Concentration changed by {round(change,3)}%")
+        EventLogger.log_event("Potential Analysis Error", "WARNING", f"Check analysis. Concentration changed by {round(change, 3)}%")
         mailer.sendEmail("WARNING","ANX001",round(change,3))
         return ("Potential Error",f"Check analysis. Concentration changed by {round(change,3)}%","warning")
     if latest < 0:
-        eventlogger.log_event(("Analyzer","ERROR",f"Check analysis. Latest concentration analysis was {round(latest,3)}"))
+        EventLogger.log_event(("Analyzer", "ERROR", f"Check analysis. Latest concentration analysis was {round(latest, 3)}"))
         mailer.sendEmail("ERROR","ANX002",round(latest,3))
         return ("Analysis Error",f"Check analysis. Latest concentration analysis was {round(latest,3)}.","danger")
     if abs(change) > 3*error:
-        eventlogger.log_event(("Analysis Error","WARNING",f"Check analysis. Concentration changed by {round(change,3)}%"))
+        EventLogger.log_event(("Analysis Error", "WARNING", f"Check analysis. Concentration changed by {round(change, 3)}%"))
         mailer.sendEmail("WARNING", "ANX001", round(change, 3))
         return ("Large Change",f"Check analysis. Concentration changed by {round(change,3)}%","warning")
 

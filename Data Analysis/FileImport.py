@@ -13,7 +13,7 @@ import csv
 import shutil
 import time
 import DataLogging
-import eventlogger
+import EventLogger
 import EmailAlert
 import config
 
@@ -60,7 +60,7 @@ class MoveFile:
         except PermissionError:
             message = "File still in use. Will retry next scan..."
             ErrorLog = DataLogging.errorLogger(time.time(), message)
-            eventlogger.log_event("Analyzer","WARNING", message)
+            EventLogger.log_event("Analyzer", "WARNING", message)
 # --------------------------------------------
 
 # Runs after file is found. Creates a list with Ch1 voltages split by trace for all 600 traces. Also stores time constant for ADC.
@@ -86,7 +86,7 @@ class FileReader:
                 except ValueError:
                     continue
                 except RuntimeError:
-                    eventlogger.log_event("Analyzer", "ERROR", "Trace length does not match defined length.")
+                    EventLogger.log_event("Analyzer", "ERROR", "Trace length does not match defined length.")
                     mailer.sendEmail("ERROR","FIM001")
                 if 0 <= sample <= config.ADC_SAMPLECOUNT-1:
                     self.Ch1V.append(float(row[1]))

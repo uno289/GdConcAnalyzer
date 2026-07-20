@@ -17,7 +17,7 @@ import ExponentialFit
 import SignalProcessor
 import Calibration
 import FileImport
-import eventlogger
+import EventLogger
 import EmailAlert
 import PowerLevelScaler
 import config
@@ -27,7 +27,7 @@ import config
 # Runs the program. Calls on everything else
 def analysis_loop():
         mailer = EmailAlert.EmailAlert()
-        eventlogger.log_event("Analyzer","INFO","[STP001] Process started.")    # Logs to webpage
+        EventLogger.log_event("Analyzer", "INFO", "[STP001] Process started.")    # Logs to webpage
 
         mailer.sendEmail("INFO","STP001")                        # Sends startup email
 
@@ -58,7 +58,7 @@ def analysis_loop():
 
         except Exception as e:
             print("Error: ",e)
-            eventlogger.log_event("Analyzer","INFO","[STP002] Empty minute cache. Instantiating minute graph with no data.")
+            EventLogger.log_event("Analyzer", "INFO", "[STP002] Empty minute cache. Instantiating minute graph with no data.")
 
         try:
             with open(HourCSV,'r', newline = '') as r:
@@ -67,7 +67,7 @@ def analysis_loop():
                     if i > 0:
                         dayLogger.oneWeekCache.append([row[0], row[1], row[2]])                         # Fills hourly cache with 1 week of data
         except:
-            eventlogger.log_event("Analyzer","INFO","[STP002] Empty hour cache. Instantiating hour graph with no data.")
+            EventLogger.log_event("Analyzer", "INFO", "[STP002] Empty hour cache. Instantiating hour graph with no data.")
 
         try:
             with open(DayCSV,'r', newline = '') as r:
@@ -76,7 +76,7 @@ def analysis_loop():
                     if i>0:
                         yearLogger.oneYearCache.append([row[0], row[1], row[2]])                        # Fills daily cache with 1 year of data
         except:
-            eventlogger.log_event("Analyzer","INFO","[STP002] Empty day cache. Instantiating day graph with no data.")
+            EventLogger.log_event("Analyzer", "INFO", "[STP002] Empty day cache. Instantiating day graph with no data.")
 
 
         while True:                                                         # Loop keeps the program running forever
@@ -84,7 +84,7 @@ def analysis_loop():
             file_path = scanner.scanFile()                                  # If a file exists, this locates it
 
             if file_path is not None:
-                eventlogger.log_event("Analyzer","INFO","File found. Analyzing...")
+                EventLogger.log_event("Analyzer", "INFO", "File found. Analyzing...")
                 try:
                     file = FileImport.load_waveform(file_path)                  # Imports the file
                     listoflists = file.fullList                                 # All 600 runs, each one is 165 samples
@@ -125,7 +125,7 @@ def analysis_loop():
 
                     try:
                         if len(hourLogger.oneHourData) >= 60:
-                            eventlogger.log_event("Analyzer","INFO","Hourly graph updated with most recent average.")
+                            EventLogger.log_event("Analyzer", "INFO", "Hourly graph updated with most recent average.")
                             houravg = np.average([s[1] for s in hourLogger.oneHourData])
                             hourerror = np.average([s[2] for s in hourLogger.oneHourData])
                             hourtime = time.time() + 32400
@@ -133,12 +133,12 @@ def analysis_loop():
                             hourLogger.oneHourData.clear()
 
                     except RuntimeError:
-                        eventlogger.log_event("Analyzer","ERROR","Error encountered when adjusting hourly average!")
+                        EventLogger.log_event("Analyzer", "ERROR", "Error encountered when adjusting hourly average!")
                         pass
 
                     try:
                         if len(dayLogger.oneDayData) >= 24:
-                            eventlogger.log_event("Analyzer","INFO","Daily graph updated with most recent average.")
+                            EventLogger.log_event("Analyzer", "INFO", "Daily graph updated with most recent average.")
                             dayavg = np.average([s[1] for s in dayLogger.oneDayData])
                             hourerror = np.average([s[2] for s in dayLogger.oneDayData])
                             daytime = time.time() + 32400
@@ -146,7 +146,7 @@ def analysis_loop():
                             dayLogger.oneDayData.clear()
 
                     except RuntimeError:
-                        eventlogger.log_event("Analyzer", "ERROR", "Error encountered when adjusting daily average!")
+                        EventLogger.log_event("Analyzer", "ERROR", "Error encountered when adjusting daily average!")
                         pass
 
 
@@ -159,10 +159,10 @@ def analysis_loop():
                     DailyOneYearGraph = Grapher.DailyGraph(yearLogger.oneYearCache)       # Loads the daily grapher
                     DailyOneYearGraph.plotDaily()                                         # Graphs the average daily concentration for past year
 
-                    eventlogger.log_event("Analyzer","INFO","Loop successful. Sleeping for 30 seconds...")
+                    EventLogger.log_event("Analyzer", "INFO", "Loop successful. Sleeping for 30 seconds...")
 
                 except Exception as e:
-                    eventlogger.log_event("Analyzer","ERROR","RuntimeError encountered. Sleeping for 30 seconds...")
+                    EventLogger.log_event("Analyzer", "ERROR", "RuntimeError encountered. Sleeping for 30 seconds...")
                     mailer.sendEmail("ERROR","ANX003","placeholder")
                     unixtime = time.time()
                     log = DataLogging.errorLogger(unixtime, e)                          # Logs when things break due to Python
@@ -172,7 +172,7 @@ def analysis_loop():
                     fileMover.moveFile()
             else:
                 pass
-                eventlogger.log_event("Analyzer","INFO","No file. Sleeping for 30 seconds...")
+                EventLogger.log_event("Analyzer", "INFO", "No file. Sleeping for 30 seconds...")
 
             with open(config.heartbeat,"w") as f:
                 f.write(str(time.time()))                          # Writes heartbeats to the webpage
@@ -203,7 +203,7 @@ def calibration_loop():
         file_path = scanner.scanFile()  # If a file exists, this locates it
 
         if file_path is not None:
-            eventlogger.log_event("Analyzer", "INFO", "File found. Analyzing...")
+            EventLogger.log_event("Analyzer", "INFO", "File found. Analyzing...")
             try:
                 file = FileImport.load_waveform(file_path)  # Imports the file
                 listoflists = file.fullList  # All 600 runs, each one is 165 samples
@@ -252,7 +252,7 @@ def calibration_loop():
                 fileMover.moveFile()
 
             except Exception as e:
-                eventlogger.log_event("Analyzer", "ERROR", "RuntimeError encountered. Sleeping for 30 seconds...")
+                EventLogger.log_event("Analyzer", "ERROR", "RuntimeError encountered. Sleeping for 30 seconds...")
                 mailer.sendEmail("ERROR", "ANX003", "placeholder")
                 unixtime = time.time()
                 log = DataLogging.errorLogger(unixtime, e)  # Logs when things break due to Python
@@ -262,6 +262,6 @@ def calibration_loop():
                 fileMover.moveFile()
         else:
             pass
-            eventlogger.log_event("Analyzer", "INFO", "No file. Sleeping for 30 seconds...")
+            EventLogger.log_event("Analyzer", "INFO", "No file. Sleeping for 30 seconds...")
 
         time.sleep(30)  # Time in seconds between each pass (set to 1/2 reception time)
