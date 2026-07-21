@@ -522,7 +522,7 @@ def check_latest_power():
             return None,None,None,None
 
         timestamp = float(row[0])
-        power = round(float(row[1]),2)
+        power = float(row[1])
         scalefactor = round(float(row[2]),3)
 
         dt = datetime.datetime.fromtimestamp(timestamp, zoneinfo.ZoneInfo("Asia/Tokyo"))
@@ -530,7 +530,7 @@ def check_latest_power():
 
     return timestamp,power,scalefactor,formatted
 
-# Concentration status
+# Power Meter status
 @app.callback(
     Output("power-status","children"),
     Output("power-status-detail","children"),
@@ -539,7 +539,7 @@ def check_latest_power():
 )
 def update_power_status(_):
     timestamp,power,scalefactor,formatted = check_latest_power()
-    power = power*1000
+    power = round(power*1000,3)
     if None in (power, timestamp, scalefactor):
         return ("No data", "Waiting for reading...","secondary")
     if config.POWER_SCALE_MIN > scalefactor  or scalefactor > config.POWER_SCALE_MAX:
