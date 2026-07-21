@@ -120,7 +120,7 @@ def analysis_loop():
                     hourLogger.addSample([unixtime, round(scaledVals[2],5),round(scaledVals[3],5)])   # Logs the time, concentration, and error into file
 
                     fileMover = FileImport.MoveFile(file_path)                  # Loads the file mover (post-processing)
-                    fileMover.moveFile()                                        # Moves the processed file out
+                    fileMover.moveFile()                                        # Either moves file out to Processed, or deletes (config.FILE_DELETION)
                     # time.sleep(1)
 
                     try:
@@ -169,7 +169,7 @@ def analysis_loop():
                     log.errorLogging()
 
                     fileMover = FileImport.MoveFile(file_path)                          # Loads the file mover (post-processing)
-                    fileMover.moveFile()
+                    fileMover.file_error_move()                                         # Forces file to move to Processed regardless of deletion config!
             else:
                 pass
                 EventLogger.log_event("Analyzer", "INFO", "No file. Sleeping for 30 seconds...")
@@ -249,7 +249,7 @@ def calibration_loop():
                     ])
 
                 fileMover = FileImport.MoveFile(file_path)  # Loads the file mover (post-processing)
-                fileMover.moveFile()
+                fileMover.moveFile()                        # Either moves file out to Processed, or deletes (config.FILE_DELETION)
 
             except Exception as e:
                 EventLogger.log_event("Analyzer", "ERROR", "RuntimeError encountered. Sleeping for 30 seconds...")
@@ -259,7 +259,7 @@ def calibration_loop():
                 log.errorLogging()
 
                 fileMover = FileImport.MoveFile(file_path)  # Loads the file mover (post-processing)
-                fileMover.moveFile()
+                fileMover.file_error_move()                 # Forces file to move to Processed regardless of deletion config!
         else:
             pass
             EventLogger.log_event("Analyzer", "INFO", "No file. Sleeping for 30 seconds...")

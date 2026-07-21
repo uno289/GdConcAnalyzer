@@ -61,6 +61,17 @@ class MoveFile:
             message = "File still in use. Will retry next scan..."
             ErrorLog = DataLogging.errorLogger(time.time(), message)
             EventLogger.log_event("Analyzer", "WARNING", message)
+    def file_error_move(self):
+        destination = os.path.join(config.processedData, os.path.basename(self.fileName))
+        try:
+            if os.path.exists(destination):
+                os.remove(destination)
+            else:
+                shutil.move(self.fileName, config.processedData)
+        except PermissionError:
+            message = "File still in use. Will retry next scan..."
+            ErrorLog = DataLogging.errorLogger(time.time(), message)
+            EventLogger.log_event("Analyzer", "WARNING", message)
 # --------------------------------------------
 
 # Runs after file is found. Creates a list with Ch1 voltages split by trace for all 600 traces. Also stores time constant for ADC.
