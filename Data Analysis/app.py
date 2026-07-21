@@ -9,6 +9,7 @@
 import csv
 import pathlib
 import datetime
+import zoneinfo
 import time
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html, Input, Output, ctx, dash_table, State
@@ -159,11 +160,11 @@ app.layout =(
                           dbc.CardBody([html.H5(id="analysis-status",children="Checking...",className="mb-2"),html.P(id="analysis-status-detail",children="",className="card-text")])],color="dark",inverse=True
                          ,id="analysis-status-card"),width=3),
                 dbc.Col(
-                    dbc.Card([dbc.CardHeader("Latest Concentration",style={"fontFamily":"Rajdhani"}),
-                          dbc.CardBody([html.H5(id="concentration-status", children="Checking...", className="mb-2"),
-                                        html.P(id="concentration-status-detail", children="", className="card-text")])],
+                    dbc.Card([dbc.CardHeader("Latest Power Level",style={"fontFamily":"Rajdhani"}),
+                          dbc.CardBody([html.H5(id="power-status", children="Checking...", className="mb-2"),
+                                        html.P(id="power-status-detail", children="", className="card-text")])],
                          color="dark", inverse=True
-                         , id="concentration-status-card"), width=3,),
+                         , id="power-status-card"), width=3,),
         ],className="g-4 mb-4"),
         dbc.Alert(
                 id="error-alert",
@@ -453,14 +454,6 @@ def update_main_status(_):
     except Exception as e:
         return("Unknown","Heartbeat file unavailable","secondary")
 
-def get_wavedump_latest_filetime():
-    files=list(processedData.glob("*"))
-    try:
-        newest = max(processedData.iterdir(),key=lambda x:x.stat().st_mtime)
-        return newest.stat().st_mtime
-    except Exception as e:
-        return None
-
 # Wavedump status
 @app.callback(
     Output("wavedump-status","children"),
@@ -469,32 +462,20 @@ def get_wavedump_latest_filetime():
     Input("refresh-minutely","n_intervals")
 )
 def update_wavedump(_):
-    latest = get_wavedump_latest_filetime()
     with open(config.wavedumpcheck,"r") as f:
-        if latest is None:
-            return ("No data","No file found","secondary")
-        age = time.time() - latest
-        importerheartbeat = time.time() - float(f.read())
-        if importerheartbeat > 300 and age > 300:
-            EventLogger.log_event("Analyzer", "ERROR", f"Critical error. Wavedump AND Analyzer down, last file {int(age)}s ago")
-            mailer.sendEmail("ERROR","WDP002",int(age))
-            return ("Critical error", f"Last file: {int(age)}s ago, check WaveDump AND Analyzer", "danger")
-        elif age > 120:
-            EventLogger.log_event("Analyzer", "ERROR", f"Analyzer stopped. Last file: {int(age)}s ago, check FileImport.")
-            mailer.sendEmail("ERROR","FIM002",int(age))
-            return("Stopped",f"Last file: {int(age)}s ago, check Analyzer","danger")
-        elif importerheartbeat > 120:
-            EventLogger.log_event("Analyzer", "ERROR", f"Analyzer stopped. Last file: {int(age)}s ago, check WaveDump.")
-            mailer.sendEmail("ERROR","WDP001",int(age))
-            return("Stopped",f"Last file: {int(age)}s ago, check WaveDump","danger")
-        elif 120 < age < 300:
-            EventLogger.log_event("Analyzer", "WARNING", f"Analyzer delayed. Last file: {int(age)}s ago, check FileImport.")
-            return ("Delayed",f"Last file: {int(age)}s ago, check Analyzer","warning")
-        elif 120 < importerheartbeat < 300:
-            EventLogger.log_event("Analyzer", "WARNING", f"Analyzer delayed. Last file:{int(age)}s ago, check WaveDump.")
-            return ("Delayed", f"Last file: {int(age)}s ago, check WaveDump", "warning")
-        if age < 120 and importerheartbeat <120:
-            return ("Active",f"Last file: {int(age)}s ago","success")
+        timestamp=float(f.read())
+        file_read_age = time.time() - timestamp
+        if file_read_age is None:
+            return ("No data","No timestamp found","secondary")
+        if file_read_age > 300:
+            EventLogger.log_event("Analyzer", "ERROR", f"Critical error. Wavedump or Analyzer down, last read {int(file_read_age)}s ago")
+            mailer.sendEmail("ERROR","WDP002",int(file_read_age))
+            return ("Error", f"Last read: {int(file_read_age)}s ago, check file importing", "danger")
+        elif 120 < file_read_age < 300:
+            EventLogger.log_event("Analyzer", "WARNING", f"Analyzer delayed. Last read:{int(file_read_age)}s ago, check WaveDump.")
+            return ("Delayed", f"Last read: {int(file_read_age)}s ago, check file importing", "warning")
+        if file_read_age <120:
+            return ("Active",f"Last read: {int(file_read_age)}s ago","success")
 
 def check_analysis_quality():
     df = pd.read_csv(config.oneMinuteCSV)
@@ -508,20 +489,20 @@ def check_analysis_quality():
     change = (latest-previous)/previous
 
     if change < 0.1:
-        EventLogger.log_event("Analyzer", "INFO", f"Nominal operation. Concentration changed by {round(change, 3)}%")
-        return ("Nominal", f"Concentration changed by {round(change,3)}%","success")
+        EventLogger.log_event("Analyzer", "INFO", f"Nominal operation. Concentration changed by {round(change, 3)}% to {round(latest,3)}%")
+        return ("Nominal", f"Conc. changed by {round(change,3)}% to {round(latest,3)}%","success")
     if change > 0.1:
-        EventLogger.log_event("Potential Analysis Error", "WARNING", f"Check analysis. Concentration changed by {round(change, 3)}%")
+        EventLogger.log_event("Potential Analysis Error", "WARNING", f"Check analysis. Concentration changed by {round(change, 3)}% to {round(latest,3)}%")
         mailer.sendEmail("WARNING","ANX001",round(change,3))
-        return ("Potential Error",f"Check analysis. Concentration changed by {round(change,3)}%","warning")
+        return ("Potential Error",f"Check analysis. Conc. changed by {round(change,3)}% to {round(latest,3)}%","warning")
     if latest < 0:
-        EventLogger.log_event(("Analyzer", "ERROR", f"Check analysis. Latest concentration analysis was {round(latest, 3)}"))
+        EventLogger.log_event(("Analyzer", "ERROR", f"Check analysis. Latest concentration was {round(latest, 3)}%"))
         mailer.sendEmail("ERROR","ANX002",round(latest,3))
-        return ("Analysis Error",f"Check analysis. Latest concentration analysis was {round(latest,3)}.","danger")
+        return ("Analysis Error",f"Check analysis. Latest conc. was {round(latest,3)}%.","danger")
     if abs(change) > 3*error:
-        EventLogger.log_event(("Analysis Error", "WARNING", f"Check analysis. Concentration changed by {round(change, 3)}%"))
+        EventLogger.log_event(("Analysis Error", "WARNING", f"Check analysis. Concentration changed by {round(change, 3)}% to {round(latest,3)}%"))
         mailer.sendEmail("WARNING", "ANX001", round(change, 3))
-        return ("Large Change",f"Check analysis. Concentration changed by {round(change,3)}%","warning")
+        return ("Large Change",f"Check analysis. Conc. changed by {round(change,3)}% to {round(latest,3)}%","warning")
 
 # Status cards
 @app.callback(
@@ -533,27 +514,42 @@ def check_analysis_quality():
 def update_analysis_status(_):
     return check_analysis_quality()
 
-def check_latest_concentration():
-    df = pd.read_csv(config.oneMinuteCSV)
-    latest_conc = df.iloc[-1]["Concentration"]
-    latest_err = df.iloc[-1]["Error"]
-    if len(df) > 0:
-        return latest_conc,latest_err
-    else:
-        return None,None
+def check_latest_power():
+    with open(config.lastPowerLog,'r') as f:
+        reader = csv.reader(f)
+        row = next(reader,None)
+        if row is None:
+            return None,None,None,None
+
+        timestamp = float(row[0])
+        power = round(float(row[1]),2)
+        scalefactor = round(float(row[2]),3)
+
+        dt = datetime.datetime.fromtimestamp(timestamp, zoneinfo.ZoneInfo("Asia/Tokyo"))
+        formatted = dt.strftime("%Y-%m-%d %H:%M:%S")
+
+    return timestamp,power,scalefactor,formatted
 
 # Concentration status
 @app.callback(
-    Output("concentration-status","children"),
-    Output("concentration-status-detail","children"),
-    Output("concentration-status-card","color"),
+    Output("power-status","children"),
+    Output("power-status-detail","children"),
+    Output("power-status-card","color"),
     Input("refresh-minutely","n_intervals")
 )
-def update_concentration(_):
-    conc,error = check_latest_concentration()
-    if conc is None:
-        return ("No data", "Waiting for analysis...","secondary")
-    return ("Successful Analysis", f"Concentration is {round(conc*100,3)} ± {round(error*100,3)}%.","success")
+def update_power_status(_):
+    timestamp,power,scalefactor,formatted = check_latest_power()
+    if None in (power, timestamp, scalefactor):
+        return ("No data", "Waiting for reading...","secondary")
+    if config.POWER_SCALE_MIN > scalefactor  or scalefactor > config.POWER_SCALE_MAX:
+        # New error code
+        return ("Reading Error", f"Scale factor error. Scale factor at {formatted} was {scalefactor} at {power}mV. Check power meter.","warning")
+    if time.time()-timestamp < 120:
+        return ("Successful Reading", f"Power at {formatted} was {power}mV. Scale factor is {scalefactor}.","success")
+    elif 300 > time.time() - timestamp > 120:
+        return ("Reading Delay", f"Power at {formatted} was {power}mV. Scale factor is {scalefactor}.","warning")
+    elif 300 < time.time() - timestamp:
+        return ("Reading Error", f"Power at {formatted} was {power}mV. Scale factor is {scalefactor}. No reading in 5 minutes.","danger")
 
 # Run counter
 @app.callback(

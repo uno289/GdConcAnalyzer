@@ -50,6 +50,8 @@ PEAK_TARGET = 1240              # Tells SignalProcessor roughly where the peak i
 # --------------------------------------------
 # PowerLevelScaler.py
 CALIBRATION_VOLTAGE = 0.295     # This value is in mW, whatever calibration voltage was used
+POWER_SCALE_MIN = 0.66          # Used by app.py to check power scaling factor
+POWER_SCALE_MAX = 1.5           # Used by app.py to check power scaling factor
 
 # --------------------------------------------
 # app.py
