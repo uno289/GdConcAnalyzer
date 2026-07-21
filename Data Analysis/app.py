@@ -496,7 +496,7 @@ def check_analysis_quality():
         mailer.sendEmail("WARNING","ANX001",round(change,3))
         return ("Potential Error",f"Check analysis. Conc. changed by {round(change,3)}% to {round(latest,3)}%","warning")
     if latest < 0:
-        EventLogger.log_event(("Analyzer", "ERROR", f"Check analysis. Latest concentration was {round(latest, 3)}%"))
+        EventLogger.log_event("Analyzer", "ERROR", f"Check analysis. Latest concentration was {round(latest, 3)}%")
         mailer.sendEmail("ERROR","ANX002",round(latest,3))
         return ("Analysis Error",f"Check analysis. Latest conc. was {round(latest,3)}%.","danger")
     if abs(change) > 3*error:
@@ -542,13 +542,16 @@ def update_power_status(_):
     if None in (power, timestamp, scalefactor):
         return ("No data", "Waiting for reading...","secondary")
     if config.POWER_SCALE_MIN > scalefactor  or scalefactor > config.POWER_SCALE_MAX:
-        # New error code
+        EventLogger.log_event("Scale Factor Error", "ERROR",f"Check StarLab. Last power reading was {power}mV at {formatted}, with a scale factor of {scalefactor}.")
+        mailer.sendEmail("ERROR","POW003",(formatted,power,scalefactor))
         return ("Reading Error", f"Scale factor error. Scale factor at {formatted} was {scalefactor} at {power}mV. Check power meter.","warning")
     if time.time()-timestamp < 120:
         return ("Successful Reading", f"Power at {formatted} was {power}mV. Scale factor is {scalefactor}.","success")
     elif 300 > time.time() - timestamp > 120:
         return ("Reading Delay", f"Power at {formatted} was {power}mV. Scale factor is {scalefactor}.","warning")
     elif 300 < time.time() - timestamp:
+        EventLogger.log_event("Power Failure", "ERROR", f"Check StarLab. Last power reading was {power}mV at {formatted}.")
+        mailer.sendEmail("ERROR","POW001",(formatted))
         return ("Reading Error", f"Power at {formatted} was {power}mV. Scale factor is {scalefactor}. No reading in 5 minutes.","danger")
 
 # Run counter

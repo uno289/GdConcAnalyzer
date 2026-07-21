@@ -45,15 +45,20 @@ ALERTS = {
     "FIM001": {
         "title": "File import length error",
         "body": "File imported was of the wrong length. Check WaveDump trace count vs. FileImport."},
-    "FIM002": {
-        "title": "Analyzer failure",
-        "body": "Analyzer stopped. Last file was {}s ago, check FileImport."},
     "WDP001": {
         "title": "WaveDump failure",
         "body": "Analyzer stopped. Last file was {}s ago, check WaveDump."},
     "WDP002": {
         "title": "File handling failure",
         "body": "Critical error. Last file was {}s ago, check WaveDump and FileImport."},
+    "POW001": {
+        "title": "Power failure",
+        "body": "Power error. Last power reading was {}s ago, check StarLab."
+    },
+    "POW002": {
+        "title": "Large scale factor deviation",
+        "body": "Power error. Last timestamp/power/scale factor reading was {}, check StarLab."
+    }
 }
 
 RECIPIENTS = config.EMAIL_LIST
