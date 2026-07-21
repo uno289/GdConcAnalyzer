@@ -27,7 +27,7 @@ EMAIL_LIST = [
 # --------------------------------------------
 # FileImport.py
 FILE_DELETION = True            # Turns on/off file deletion
-ADC_FILE_SIZE = 4450000         # File size when completed in bytes
+ADC_FILE_SIZE = 23450000        # File size when completed in bytes
 ADC_DELTATIME = 1.28e-6         # Time between samples in seconds
 ADC_SAMPLECOUNT = 7814          # How many samples per trace
 
