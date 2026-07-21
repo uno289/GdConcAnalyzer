@@ -48,7 +48,7 @@ class ExponentialFit:
             popt, pcov = scipy.optimize.curve_fit(self.exp_fit, self.x_fit, self.y_fit, p0=p1,bounds=([-np.inf, 0, -np.inf],[np.inf, np.inf, np.inf]), maxfev=10000)
             V_0, tau, V_BG = popt
             self.y_model = self.exp_fit(self.x_fit, *popt)
-            print("V0 Tau: ", abs(V_0 + V_BG) * tau)
+            #print("V0 Tau: ", abs(V_0 + V_BG) * tau)
             self.V0_tau = abs(V_0 + V_BG) * tau
 
             # Error correction below:

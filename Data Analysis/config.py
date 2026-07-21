@@ -27,9 +27,9 @@ EMAIL_LIST = [
 # --------------------------------------------
 # FileImport.py
 FILE_DELETION = True            # Turns on/off file deletion
-ADC_FILE_SIZE = 23450000        # File size when completed in bytes
+ADC_FILE_SIZE = 20000           # File size when completed in bytes
 ADC_DELTATIME = 1.28e-6         # Time between samples in seconds
-ADC_SAMPLECOUNT = 7814          # How many samples per trace
+ADC_SAMPLECOUNT = 7813          # How many samples per trace
 
 # --------------------------------------------
 # Calibration.py
@@ -45,12 +45,12 @@ MAX_EVENTS = 15                 # Rolling log amount for the event logger
 
 # --------------------------------------------
 # SignalProcessor.py
-PEAK_TARGET = 1240              # Tells SignalProcessor roughly where the peak is
+PEAK_TARGET = 1002              # Tells SignalProcessor roughly where the peak is
 
 # --------------------------------------------
 # PowerLevelScaler.py
-CALIBRATION_VOLTAGE = 0.295     # This value is in mW, whatever calibration voltage was used
-POWER_SCALE_MIN = 0.66          # Used by app.py to check power scaling factor
+CALIBRATION_VOLTAGE = 0.000295   # This value is in W, whatever calibration voltage was used
+POWER_SCALE_MIN = 0.4          # Used by app.py to check power scaling factor
 POWER_SCALE_MAX = 1.5           # Used by app.py to check power scaling factor
 
 # --------------------------------------------

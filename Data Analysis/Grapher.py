@@ -55,6 +55,8 @@ class Grapher:
             font=dict(family="Rajdhani,sans-serif")
             )
 
+        fig.update_yaxes(range=[-6,0])
+
         fig.write_html(
             r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\current_trace.html", auto_open=False
         )

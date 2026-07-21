@@ -35,7 +35,9 @@ class Averager:
             target = config.PEAK_TARGET                         # The peak target - which datapoint should the peak be
             index = np.argmax(abs(pulse))
             shift = target - index                              # The amount the peak needs to be shifted by\
-            #print(index)
+            #print("Peak: ",index)
+            '''if shift > 5:
+                print("Shift: ",shift,)'''
             shifted = np.full(len(pulse), np.nan)
             if shift > 0:                                       # Moves the trace to the right
                 shifted[shift:] = pulse[:-shift]
@@ -48,8 +50,6 @@ class Averager:
 
         if np.any(~np.isnan(self.shiftedList)):
             #print("Shape: ", np.shape(self.shiftedList))
-            #print(self.shiftedList[:10])
-            #print(self.shiftedList[-10:])
             shifted = np.array(self.shiftedList)
             all_nan_cols = np.all(np.isnan(shifted), axis=0)
             #print("Columns that are all NaN:", np.sum(all_nan_cols))

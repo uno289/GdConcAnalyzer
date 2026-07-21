@@ -539,18 +539,19 @@ def check_latest_power():
 )
 def update_power_status(_):
     timestamp,power,scalefactor,formatted = check_latest_power()
+    power = power*1000
     if None in (power, timestamp, scalefactor):
         return ("No data", "Waiting for reading...","secondary")
     if config.POWER_SCALE_MIN > scalefactor  or scalefactor > config.POWER_SCALE_MAX:
-        EventLogger.log_event("Scale Factor Error", "ERROR",f"Check StarLab. Last power reading was {power}mV at {formatted}, with a scale factor of {scalefactor}.")
-        mailer.sendEmail("ERROR","POW003",(formatted,power,scalefactor))
-        return ("Reading Error", f"Scale factor error. Scale factor at {formatted} was {scalefactor} at {power}mV. Check power meter.","warning")
+        EventLogger.log_event("Scale Factor Error", "ERROR",f"Check StarLab. Last power reading was {power}mW at {formatted}, with a scale factor of {scalefactor}.")
+        mailer.sendEmail("ERROR","POW002",(formatted,power,scalefactor))
+        return ("Reading Error", f"Scale factor error. Scale factor at {formatted} was {scalefactor} at {power}mW. Check power meter.","warning")
     if time.time()-timestamp < 120:
-        return ("Successful Reading", f"Power at {formatted} was {power}mV. Scale factor is {scalefactor}.","success")
+        return ("Successful Reading", f"Power at {formatted} was {power}mW. Scale factor is {scalefactor}.","success")
     elif 300 > time.time() - timestamp > 120:
-        return ("Reading Delay", f"Power at {formatted} was {power}mV. Scale factor is {scalefactor}.","warning")
+        return ("Reading Delay", f"Power at {formatted} was {power}mW. Scale factor is {scalefactor}.","warning")
     elif 300 < time.time() - timestamp:
-        EventLogger.log_event("Power Failure", "ERROR", f"Check StarLab. Last power reading was {power}mV at {formatted}.")
+        EventLogger.log_event("Power Failure", "ERROR", f"Check StarLab. Last power reading was {power}mW at {formatted}.")
         mailer.sendEmail("ERROR","POW001",(formatted))
         return ("Reading Error", f"Power at {formatted} was {power}mV. Scale factor is {scalefactor}. No reading in 5 minutes.","danger")
 
