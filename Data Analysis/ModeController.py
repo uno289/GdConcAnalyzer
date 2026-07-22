@@ -107,17 +107,16 @@ def analysis_loop():
                     Graph = Grapher.Grapher(testrun, Ch1VZeroed, timeAxis)            # Graphs individual trace
                     Graph.plot()
 
-                    calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)  # Loading the V_0 * tau value into the calibrator
+                    unixtime = time.time() + 32400  # Shifts time zone to Japan time (TEMP)
 
-                    concentration = calibrator.linearFunction()                        # Returns concentration value AND error
-                    error = round(0.1 * concentration[0] + concentration[1],5)         # Systematic error = 10%, adding the uncertainty
-                    # print("Concentration: ", round(concentration[0],5), ", Error: ", error)
+                    scaledVals = pscaler.scalePowerLevel(unixtime, testrun.V0_tau,testrun.Error_sqrt)  # Load error and signal area into the scaler
 
-                    unixtime = time.time()+32400                                       # Shifts time zone to Japan time (TEMP)
+                    calibrator = Calibration.Calibration(scaledVals[2], scaledVals[3])  # Loading the ADJUSTED V_0 * tau value into the calibrator
+                    concentration = calibrator.linearFunction()  # Returns concentration value AND error
 
-                    scaledVals = pscaler.scalePowerLevel(unixtime,concentration[0], error)            # Handles scaling to match the calibrated power levels
+                    error = round(0.1 * concentration[0] + concentration[1],5)  # Systematic error = 10%, adding the uncertainty
 
-                    hourLogger.addSample([unixtime, round(scaledVals[2],5),round(scaledVals[3],5)])   # Logs the time, concentration, and error into file
+                    hourLogger.addSample([unixtime, round(concentration[0],5),round(error,5)])   # Logs the time, concentration, and error into file
 
                     fileMover = FileImport.MoveFile(file_path)                  # Loads the file mover (post-processing)
                     fileMover.moveFile()                                        # Either moves file out to Processed, or deletes (config.FILE_DELETION)
@@ -226,15 +225,14 @@ def calibration_loop():
                 Graph = Grapher.Grapher(testrun, Ch1VZeroed, timeAxis)  # Graphs individual trace
                 Graph.plot()
 
-                calibrator = Calibration.Calibration(testrun.V0_tau,testrun.Error_sqrt)  # Loading the V_0 * tau value into the calibrator
-
-                concentration = calibrator.linearFunction()  # Returns concentration value AND error
-                error = round(0.1 * concentration[0] + concentration[1],5)  # Systematic error = 10%, adding the uncertainty
-                #print("Concentration: ", round(concentration[0],5), ", Error: ", error)
-
                 unixtime = time.time() + 32400  # Shifts time zone to Japan time (TEMP)
 
-                scaledVals = pscaler.scalePowerLevel(unixtime, concentration[0],error)  # Handles scaling to match the calibrated power levels
+                scaledVals = pscaler.scalePowerLevel(unixtime,testrun.V0_tau,testrun.Error_sqrt) #Load error and signal area into the scaler
+
+                calibrator = Calibration.Calibration(scaledVals[2],scaledVals[3])  # Loading the ADJUSTED V_0 * tau value into the calibrator
+                concentration = calibrator.linearFunction()  # Returns concentration value AND error
+
+                error = round(0.1 * concentration[0] + concentration[1],5)  # Systematic error = 10%, adding the uncertainty
 
                 with open(config.calibrationCSV,"a", newline='') as f:  # Calibration log
                     writer = csv.writer(f)
@@ -244,8 +242,9 @@ def calibration_loop():
                         testrun.tau,                                    # Estimated time constant
                         testrun.V0_tau,                                 # Estimated area under the trace
                         testrun.Error_sqrt,                             # Error between estimate and actual points
-                        scaledVals[0][0],                               # Power level
-                        scaledVals[0][1]                                # Power timestamp
+                        scaledVals[0],                                  # Power meter timestamp
+                        scaledVals[1]                                   # Power meter level
+
                     ])
 
                 fileMover = FileImport.MoveFile(file_path)  # Loads the file mover (post-processing)
