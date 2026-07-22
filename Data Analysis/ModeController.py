@@ -264,4 +264,4 @@ def calibration_loop():
             pass
             EventLogger.log_event("Analyzer", "INFO", "No file. Sleeping for 30 seconds...")
 
-        time.sleep(30)  # Time in seconds between each pass (set to 1/2 reception time)
+        time.sleep(0)  # Time in seconds between each pass (set to 1/2 reception time)

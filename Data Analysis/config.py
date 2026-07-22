@@ -11,7 +11,7 @@ import EmailandPass
 # Code
 
 # main.py
-ANALYZER_MODE = "Analysis"       # Choose between "Analysis" or "Calibration" to swap modes
+ANALYZER_MODE = "Calibration"       # Choose between "Analysis" or "Calibration" to swap modes
 
 # --------------------------------------------
 # EmailAlert.py
