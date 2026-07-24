@@ -233,7 +233,7 @@ def calibration_loop():
                 concentration = calibrator.linearFunction()  # Returns concentration value AND error
 
                 error = round(0.1 * concentration[0] + concentration[1],5)  # Systematic error = 10%, adding the uncertainty
-
+                print(concentration[0])
                 with open(config.calibrationCSV,"a", newline='') as f:  # Calibration log
                     writer = csv.writer(f)
                     writer.writerow([
@@ -252,6 +252,7 @@ def calibration_loop():
 
             except Exception as e:
                 EventLogger.log_event("Analyzer", "ERROR", "RuntimeError encountered. Sleeping for 30 seconds...")
+                print(e)
                 mailer.sendEmail("ERROR", "ANX003", "placeholder")
                 unixtime = time.time()
                 log = DataLogging.errorLogger(unixtime, e)  # Logs when things break due to Python

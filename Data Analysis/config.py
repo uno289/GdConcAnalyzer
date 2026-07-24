@@ -8,7 +8,7 @@
 import EmailandPass
 
 # ============================================
-# Code
+# Configurables
 
 # main.py
 ANALYZER_MODE = "Calibration"       # Choose between "Analysis" or "Calibration" to swap modes
@@ -26,18 +26,20 @@ EMAIL_LIST = [
 
 # --------------------------------------------
 # FileImport.py
-FILE_DELETION = False            # Turns on/off file deletion
+FILE_DELETION = False           # Turns on/off file deletion
 ADC_FILE_SIZE = 20000           # File size when completed in bytes
 ADC_DELTATIME = 1.28e-6         # Time between samples in seconds
-ADC_SAMPLECOUNT = 7813          # How many samples per trace
+ADC_SAMPLECOUNT = 8000          # How many samples per trace
 
 # --------------------------------------------
 # Calibration.py
-CALIBRATION_FACTOR = 0.293811   # Adjusts slope of calibration
+CALIBRATION_FACTOR = 0.0000279595   # Adjusts slope of calibration
+
+
 
 # --------------------------------------------
 # Grapher.py
-TRACE_COUNT = 232               # Replace with current trace count per minute
+TRACE_COUNT = 250               # Replace with current trace count per minute
 
 # --------------------------------------------
 # EventLogger.py
@@ -49,13 +51,13 @@ PEAK_TARGET = 1002              # Tells SignalProcessor roughly where the peak i
 
 # --------------------------------------------
 # PowerLevelScaler.py
-BENCHMARK_V0TAU = 0.0143089169  # Used to adjust power calibration
-CALIBRATION_VOLTAGE = 0.000295  # This value is in W, whatever calibration voltage was used
+BENCHMARK_V0TAU = 0.0089910358  # Used to adjust power calibration
+CALIBRATION_VOLTAGE = 0.000274  # This value is in W, whatever calibration voltage was used
 POWER_SCALE_MIN = 0.3           # Used by app.py to check power scaling factor
 POWER_SCALE_MAX = 3             # Used by app.py to check power scaling factor
 
-POWER_EQN_SLOPE = 4.59          # Slope of the power vs. signal strength dependence
-POWER_EQN_OFFSET = 0.0129       #
+POWER_EQN_SLOPE = 4.7          # Slope of the power vs. signal strength dependence
+POWER_EQN_OFFSET = 0.0129       # Offset of the power vs. signal strength dependence
 
 # --------------------------------------------
 # app.py

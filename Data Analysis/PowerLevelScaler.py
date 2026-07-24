@@ -66,6 +66,8 @@ def scaleSignal(power,signal):
 
     scaleFactor = config.BENCHMARK_V0TAU / (config.POWER_EQN_SLOPE * power + config.POWER_EQN_OFFSET)
     scaledSignal = signal * scaleFactor
+
+    print("Scale factor: ",scaleFactor)
     return scaledSignal, scaleFactor
 
 class PowerLevelScaler:
@@ -73,6 +75,7 @@ class PowerLevelScaler:
         self.startTime = getStartTime()
 
     def scalePowerLevel(self, timestamp, unscaledV0Tau, unscaledError):
+        print("Unscaled V0Tau: ", unscaledV0Tau)
         self.powerLevel = getLatestPowerLevel(timestamp, self.startTime)
         if self.powerLevel[0] is None:
             raise ValueError('No power level found.')
@@ -81,7 +84,7 @@ class PowerLevelScaler:
             self.VCorrectedTau = self.scaledSignal[0]
             self.scaleFactor = self.scaledSignal[1]
             self.CorrectedError = unscaledError * self.scaleFactor
-
+            print("Scaled V0Tau: ", self.VCorrectedTau)
             with open(config.lastPowerLog, 'w') as f:               # This piece goes to the log, [timestamp, power level, scale factor]
                 writer = csv.writer(f)
                 writer.writerow([self.powerLevel[1],self.powerLevel[0],self.scaleFactor])

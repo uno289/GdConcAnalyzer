@@ -546,9 +546,9 @@ def update_power_status(_):
         EventLogger.log_event("Scale Factor Error", "ERROR",f"Check StarLab. Last power reading was {power}mW at {formatted}, with a scale factor of {scalefactor}.")
         mailer.sendEmail("ERROR","POW002",(formatted,power,scalefactor))
         return ("Reading Error", f"Scale factor error. Scale factor at {formatted} was {scalefactor} at {power}mW. Check power meter.","warning")
-    if time.time()-timestamp < 120:
+    if time.time()-timestamp < 180:
         return ("Successful Reading", f"Power at {formatted} was {power}mW. Scale factor is {scalefactor}.","success")
-    elif 300 > time.time() - timestamp > 120:
+    elif 300 > time.time() - timestamp > 180:
         return ("Reading Delay", f"Power at {formatted} was {power}mW. Scale factor is {scalefactor}.","warning")
     elif 300 < time.time() - timestamp:
         EventLogger.log_event("Power Failure", "ERROR", f"Check StarLab. Last power reading was {power}mW at {formatted}.")

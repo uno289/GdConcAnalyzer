@@ -98,7 +98,7 @@ class MinutelyGraph:
                 x=df['date'],
                 y=df['y_data'],
                 mode="lines",
-                hovertemplate='Time: %{x}<br>Concentration: %{y:.3%}<extra></extra>'
+                hovertemplate='Date: %{x}<br>Concentration: %{y:.0f} ppm<extra></extra>'
             )
         )
         fig.update_layout(
@@ -107,7 +107,7 @@ class MinutelyGraph:
             yaxis_title="Concentration",
         )
         fig.update_yaxes(
-            tickformat=".1%"
+            range=[0,500]
         )
         fig.update_xaxes(
             tickformat='%b %d %H:%M:%S'
@@ -143,7 +143,7 @@ class HourlyGraph:
                 y=df['y_data'],
                 error_y=dict(type="data", array=self.error_data, visible=True),
                 mode="lines+markers",
-                hovertemplate='Time: %{x}<br>Concentration: %{y:.3%}<extra></extra>'
+                hovertemplate='Date: %{x}<br>Concentration: %{y:.0f} ppm<extra></extra>'
             )
         )
         fig.update_layout(
@@ -155,7 +155,7 @@ class HourlyGraph:
             tickformat='%b %d, %H:%M'
         )
         fig.update_yaxes(
-            tickformat=".1%"
+            range=[0,500]
         )
         fig.write_html(
             r"C:\Users\water\Desktop\GadoliniumAnalysis\Data\Results\hourly_graph.html",auto_open=False
@@ -188,7 +188,7 @@ class DailyGraph:
                 y=df['y_data'],
                 error_y=dict(type="data", array=self.error_data, visible=True),
                 mode="lines+markers",
-                hovertemplate='Date: %{x}<br>Concentration: %{y:.3%}<extra></extra>'
+                hovertemplate='Date: %{x}<br>Concentration: %{y:.0f} ppm<extra></extra>'
             )
         )
         fig.update_xaxes(
@@ -196,7 +196,7 @@ class DailyGraph:
             tickformat='%b %d %Y, %H:%M'
         )
         fig.update_yaxes(
-            tickformat=".1%"
+            range=[0,500]
         )
         fig.update_layout(
             title= "Daily Concentration",
