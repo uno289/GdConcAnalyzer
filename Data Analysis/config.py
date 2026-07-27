@@ -11,7 +11,7 @@ import EmailandPass
 # Configurables
 
 # main.py
-ANALYZER_MODE = "Calibration"       # Choose between "Analysis" or "Calibration" to swap modes
+ANALYZER_MODE = "Analysis"       # Choose between "Analysis" or "Calibration" to swap modes
 
 # --------------------------------------------
 # EmailAlert.py
@@ -56,7 +56,7 @@ CALIBRATION_VOLTAGE = 0.000274  # This value is in W, whatever calibration volta
 POWER_SCALE_MIN = 0.3           # Used by app.py to check power scaling factor
 POWER_SCALE_MAX = 3             # Used by app.py to check power scaling factor
 
-POWER_EQN_SLOPE = 4.7          # Slope of the power vs. signal strength dependence
+POWER_EQN_SLOPE = 4.69          # Slope of the power vs. signal strength dependence
 POWER_EQN_OFFSET = 0.0129       # Offset of the power vs. signal strength dependence
 
 # --------------------------------------------
