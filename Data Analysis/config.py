@@ -11,7 +11,7 @@ import EmailandPass
 # Configurables
 
 # main.py
-ANALYZER_MODE = "Analysis"       # Choose between "Analysis" or "Calibration" to swap modes
+ANALYZER_MODE = "Calibration"       # Choose between "Analysis" or "Calibration" to swap modes
 
 # --------------------------------------------
 # EmailAlert.py
@@ -30,6 +30,7 @@ FILE_DELETION = False           # Turns on/off file deletion
 ADC_FILE_SIZE = 20000           # File size when completed in bytes
 ADC_DELTATIME = 1.28e-6         # Time between samples in seconds
 ADC_SAMPLECOUNT = 8000          # How many samples per trace
+ADC_TIMESTAMP_PERIOD_NS = 10    # How long between each ADC clock cycle
 
 # --------------------------------------------
 # Calibration.py

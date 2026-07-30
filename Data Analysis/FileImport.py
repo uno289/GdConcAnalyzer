@@ -8,6 +8,8 @@
 
 # Imports
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import os
 import csv
 import shutil
@@ -76,22 +78,49 @@ class MoveFile:
 
 # Runs after file is found. Creates a list with Ch1 voltages split by trace for all 600 traces. Also stores time constant for ADC.
 class FileReader:
+
+    first_timestamp = None
+    acquisition_start = None
+
     def __init__(self, fileName):
         self.deltaTime = config.ADC_DELTATIME
         self.Ch1V = []
         self.fullList = []
+        self.final_timestamp = None
 
     def readFile(self, fileName):
         self.filepath = fileName
         self.fileName = os.path.basename(fileName)
-        with open(self.filepath, "r") as fileOne:                   # This section creates a list of the individual traces, each a list of their own
+
+        with open(self.filepath, "r") as fileOne:
             reader = csv.reader(fileOne, delimiter='\t')
-            self.unixtime = os.path.getmtime(self.filepath)         # Currently just is unix time of when the file is input - this seems to be more than enough for the data freq.
+
+            if FileReader.acquisition_start is None:
+                filename_time = self.fileName.split("_")[2][:14]
+
+                dt = datetime.strptime(filename_time, "%Y%m%d%H%M%S")
+                dt = dt.replace(tzinfo=ZoneInfo("Asia/Tokyo"))
+
+                FileReader.acquisition_start = int(dt.timestamp() * 1e9)
+
+            clock_period = config.ADC_TIMESTAMP_PERIOD_NS
 
             for row_num, row in enumerate(reader):                  # Loop that adds traces to lists and appends lists to the main array
                 row = [field.strip() for field in row if field.strip() != ""]
-                self.deltaTime = config.ADC_DELTATIME
 
+                if not row:
+                    continue
+
+                if "TimeStamp" in row[0]:
+                    timestripped = int(row[0].split(":")[1])
+
+                    if FileReader.first_timestamp is None:
+                        FileReader.first_timestamp = timestripped
+
+                    relative_time = timestripped - FileReader.first_timestamp
+                    timecorrected = FileReader.acquisition_start + (relative_time * clock_period)
+                    self.final_timestamp = timecorrected / 1e9
+                    continue
                 try:
                     sample = int(row[0])
                 except ValueError:

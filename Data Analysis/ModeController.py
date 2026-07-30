@@ -186,13 +186,6 @@ def analysis_loop():
 
 
 def calibration_loop():
-    mailer = EmailAlert.EmailAlert()
-
-    with open(config.startup, "w") as f:
-        f.write(str(time.time()))  # Used to keep track of startup/uptime
-
-    with open(config.runs, "w") as f:  # Resets the run counter
-        f.write(str(0))
 
     pscaler = PowerLevelScaler.PowerLevelScaler()  # Finds power logger start time
 
@@ -207,8 +200,6 @@ def calibration_loop():
                 file = FileImport.load_waveform(file_path)  # Imports the file
                 listoflists = file.fullList  # All 600 runs, each one is 165 samples
                 # print("Checkpoint1:", len(listoflists))
-                with open(config.wavedumpcheck, "w") as f:
-                    f.write(str(time.time()))  # Writes to wavedump heartbeat
 
                 avg = SignalProcessor.Averager(listoflists)  # Loads files into averager
                 avg.align()  # Aligns all samples to same peak
@@ -222,10 +213,8 @@ def calibration_loop():
                 testrun = ExponentialFit.ExponentialFit(Ch1VZeroed,timeAxis)  # Feeds in time and voltage data for exp fit
                 fit = testrun.estimate_fit()  # Performs exp fit
 
-                Graph = Grapher.Grapher(testrun, Ch1VZeroed, timeAxis)  # Graphs individual trace
-                Graph.plot()
-
-                unixtime = time.time() + 32400  # Shifts time zone to Japan time (TEMP)
+                unixtime = file.final_timestamp  # Shifts time zone to Japan time (TEMP)
+                print(unixtime)
 
                 scaledVals = pscaler.scalePowerLevel(unixtime,testrun.V0_tau,testrun.Error_sqrt) #Load error and signal area into the scaler
 
@@ -253,10 +242,6 @@ def calibration_loop():
             except Exception as e:
                 EventLogger.log_event("Analyzer", "ERROR", "RuntimeError encountered. Sleeping for 30 seconds...")
                 print(e)
-                mailer.sendEmail("ERROR", "ANX003", "placeholder")
-                unixtime = time.time()
-                log = DataLogging.errorLogger(unixtime, e)  # Logs when things break due to Python
-                log.errorLogging()
 
                 fileMover = FileImport.MoveFile(file_path)  # Loads the file mover (post-processing)
                 fileMover.file_error_move()                 # Forces file to move to Processed regardless of deletion config!
